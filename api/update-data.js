@@ -61,8 +61,16 @@ export default async function handler(req, res) {
   const appId = process.env.LARK_APP_ID;
   const appSecret = process.env.LARK_APP_SECRET;
   const token = process.env.LARK_SPREADSHEET_TOKEN;
-  const range = process.env.LARK_SHEET_RANGE || "2168c9!A1:C200";
-  const sheetId = process.env.LARK_SHEET_ID || "2168c9";
+  let range = process.env.LARK_SHEET_RANGE || "2168c9!A1:C200";
+  let sheetId = process.env.LARK_SHEET_ID || "2168c9";
+
+  // Defensive check: replace Sheet1 with exact Lark sheetId to avoid "not found sheetId" 90215 error
+  if (range && range.startsWith("Sheet1")) {
+    range = range.replace("Sheet1", "2168c9");
+  }
+  if (sheetId === "Sheet1") {
+    sheetId = "2168c9";
+  }
 
   if (!appId || !appSecret || !token) {
     return res.status(500).json({ code: 1, msg: "Missing environment variables on Vercel." });
