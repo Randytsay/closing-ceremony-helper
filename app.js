@@ -266,6 +266,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 搜尋該名義工參與的所有職務
     const userDuties = [];
+    const matchedAssignees = new Set(); // 記錄所有被匹配到的完整名字
     
     data.stages.forEach(stage => {
       stage.roles.forEach(role => {
@@ -278,7 +279,16 @@ document.addEventListener("DOMContentLoaded", () => {
             mapId: stage.mapId,
             roleId: role.id,
             roleTitle: role.title,
-            roleDesc: role.desc
+            roleDesc: role.desc,
+            assignee: role.assignee // 記錄該任務實際指派的姓名
+          });
+          
+          // 找出 assignee 中包含該關鍵字的特定姓名
+          const individualNames = role.assignee.split(/[,、.\s]/).map(n => n.trim()).filter(n => n.length > 0);
+          individualNames.forEach(iName => {
+            if (iName.includes(name)) {
+              matchedAssignees.add(iName);
+            }
           });
         }
       });
@@ -295,10 +305,24 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 渲染個人執事卡
+    // 1. 決定打招呼的稱呼姓名與子標題
+    let greetingName = name;
+    let subtitleText = `您在本次結業典禮中共擔任 <strong>${userDuties.length}</strong> 項執事職掌。請查看下方日程表與站位動線：`;
+    
+    if (matchedAssignees.size === 1) {
+      // 剛好匹配到一位學長，顯示其完整全名
+      greetingName = Array.from(matchedAssignees)[0];
+    } else if (matchedAssignees.size > 1) {
+      // 匹配到多位學長
+      const namesList = Array.from(matchedAssignees).join("、");
+      greetingName = name;
+      subtitleText = `系統匹配到多位姓名相符的學長（<strong>${namesList}</strong>），共計 <strong>${userDuties.length}</strong> 項職掌。請點擊人員以確認各自的任務與站位：`;
+    }
+
+    // 2. 渲染個人執事卡
     const dutiesListHtml = userDuties.map(duty => {
       return `
-        <div class="personal-task-item">
+        <div class="personal-task-item" style="border-left: 4px solid var(--color-gold); padding-left: 12px; margin-bottom: 14px;">
           <div class="personal-task-meta">
             <div class="personal-task-time-title">
               <span class="personal-task-time">${duty.time}</span>
@@ -306,8 +330,13 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
             <button class="btn-locate" data-map="${duty.mapId}" data-role="${duty.roleId}">📍 顯示站位</button>
           </div>
-          <div class="personal-task-title">${duty.roleTitle}</div>
-          <div class="personal-task-desc">
+          <div class="personal-task-title" style="font-size: 17px; font-weight: 700; color: var(--text-primary); margin: 6px 0;">
+            ${duty.roleTitle} 
+            <span style="font-size: 13px; font-weight: normal; color: var(--color-gold); background: var(--bg-tertiary); padding: 2px 8px; border-radius: 4px; margin-left: 8px;">
+              👤 執事人員：${duty.assignee}
+            </span>
+          </div>
+          <div class="personal-task-desc" style="font-size: 14px; color: var(--text-secondary); line-height: 1.5;">
             <strong>職掌內容：</strong>${duty.roleDesc}
           </div>
         </div>
@@ -316,14 +345,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     searchResultArea.innerHTML = `
       <div class="personal-duty-card">
-        <div class="personal-header">
+        <div class="personal-header" style="padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
           <div class="personal-welcome">
-            <h3>阿彌陀佛，${name} 學長！</h3>
-            <p>您在本次結業典禮中共擔任 <strong>${userDuties.length}</strong> 項執事職掌。請查看下方日程表與站位動線：</p>
+            <h3 style="font-family: var(--font-serif); font-size: 22px; color: var(--color-gold); margin-bottom: 6px;">阿彌陀佛，${greetingName} 學長！</h3>
+            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.5; margin: 0;">${subtitleText}</p>
           </div>
-          <span class="personal-badge">夜間班執事</span>
+          <span class="personal-badge" style="background: var(--color-gold); color: #000; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; white-space: nowrap;">夜間班執事</span>
         </div>
-        <div class="personal-tasks-list">
+        <div class="personal-tasks-list" style="padding: 20px;">
           ${dutiesListHtml}
         </div>
       </div>
