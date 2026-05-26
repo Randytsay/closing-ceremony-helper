@@ -1100,9 +1100,9 @@ body {
    11. 排班編輯器樣式 (Admin Tab)
    -------------------------------------------------------------------------- */
 .admin-layout {
-  display: grid;
-  grid-template-columns: 350px 1fr;
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
 
 /* 左側控制面板卡片 */

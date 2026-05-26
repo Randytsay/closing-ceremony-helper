@@ -465,6 +465,16 @@
         </div>
 
         <div class="admin-layout">
+          <div class="admin-editor-card">
+            <div class="editor-header">
+              <h3>📝 執事人員排定</h3>
+              <button id="btn-admin-reset" class="btn-danger-outline btn-small">重設所有執事</button>
+            </div>
+            
+            <div class="editor-stages-list" id="editor-stages-container">
+            </div>
+          </div>
+
           <div class="admin-controls-card">
             <h3>👥 義工/學員名單庫</h3>
             <p class="controls-desc">在下方框中貼入您的義工或學長名單（用逗號或換行隔開），下方各執事分配下拉選單會自動同步，方便快速點選！</p>
@@ -478,21 +488,11 @@
             <div class="admin-help-box">
               <h4>💡 如何保存與更新網頁？</h4>
               <ol>
-                <li>在右側各個典禮流程中，點擊下拉選單或手動輸入人名。</li>
-                <li>排定完畢後，點擊上方<strong>「匯出並下載 data.js」</strong>按鈕。</li>
+                <li>在上方各個典禮流程中，點擊下拉選單或手動輸入人名。</li>
+                <li>排定完畢後，點擊下方<strong>「匯出並下載 data.js」</strong>按鈕。</li>
                 <li>將下載的 <code>data.js</code> 覆蓋掉本專案資料夾中的舊 <code>data.js</code>。</li>
                 <li>使用 Git 提交變更並推送至您的 GitHub，Vercel 將自動重新發布！</li>
               </ol>
-            </div>
-          </div>
-
-          <div class="admin-editor-card">
-            <div class="editor-header">
-              <h3>📝 執事人員排定</h3>
-              <button id="btn-admin-reset" class="btn-danger-outline btn-small">重設所有執事</button>
-            </div>
-            
-            <div class="editor-stages-list" id="editor-stages-container">
             </div>
           </div>
         </div>
