@@ -976,6 +976,17 @@ window.CEREMONY_DATA = ${dataString};
   /* --------------------------------------------------------------------------
      F. 應用程式初次載入啟動 (Bootstrapping)
      -------------------------------------------------------------------------- */
+  // 實際桌次配置圖切換展開邏輯
+  const toggleActualSeatBtn = document.getElementById("btn-toggle-actual-seat");
+  const actualSeatImages = document.getElementById("actual-seat-images");
+  if (toggleActualSeatBtn && actualSeatImages) {
+    toggleActualSeatBtn.addEventListener("click", () => {
+      const isHidden = actualSeatImages.style.display === "none";
+      actualSeatImages.style.display = isHidden ? "block" : "none";
+      toggleActualSeatBtn.querySelector(".seat-arrow").textContent = isHidden ? "▲" : "▼";
+    });
+  }
+
   function bootstrap() {
     renderTimeline();
     updateDatalist();

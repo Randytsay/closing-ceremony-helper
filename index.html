@@ -127,6 +127,24 @@
           </button>
         </div>
 
+        <!-- 實際桌次位置圖對照 -->
+        <div class="actual-seating-container">
+          <button id="btn-toggle-actual-seat" class="btn-secondary" style="width: 100%; text-align: left; padding: 14px 18px; font-size: 18px; font-weight: 600; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 1.5px solid var(--color-gold);">
+            <span>🖼️ 點擊檢視「現場實際桌次配置圖」與「清淨配置圖」</span>
+            <span class="seat-arrow">▼</span>
+          </button>
+          <div id="actual-seat-images" class="actual-seat-content" style="display: none; background: var(--bg-glass); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; margin-bottom: 20px; text-align: center;">
+            <div class="actual-image-box" style="margin-bottom: 24px;">
+              <h4 style="margin-bottom: 10px; font-size: 19px; color: var(--color-gold); font-family: var(--font-serif);">實際桌次位置圖 (實際配置對照)</h4>
+              <img src="清淨桌次位置圖.jpg" alt="實際桌次位置圖" style="max-width: 100%; height: auto; border-radius: 8px; border: 1.5px solid var(--border-color); box-shadow: var(--shadow-sm);" />
+            </div>
+            <div class="actual-image-box">
+              <h4 style="margin-bottom: 10px; font-size: 19px; color: var(--color-gold); font-family: var(--font-serif);">清淨講堂室內配置圖</h4>
+              <img src="清淨配置圖.jpg" alt="清淨講堂配置圖" style="max-width: 100%; height: auto; border-radius: 8px; border: 1.5px solid var(--border-color); box-shadow: var(--shadow-sm);" />
+            </div>
+          </div>
+        </div>
+
         <!-- Interactive Map Container -->
         <div class="map-display-container">
           <div class="map-card">
