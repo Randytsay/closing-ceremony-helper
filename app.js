@@ -1227,13 +1227,6 @@ window.CEREMONY_DATA = ${dataString};
           }
         });
 
-        // 重新渲染 UI 畫面
-        renderTimeline();
-        updateDatalist();
-        renderMasterGrid();
-        renderActiveMap();
-        initAdminModule();
-
         if (showToast && statusGlow) {
           statusGlow.className = "sync-status-glow success";
           statusGlow.innerHTML = `<span>✅ 飛書雲端班表同步成功！</span>`;
@@ -1256,6 +1249,13 @@ window.CEREMONY_DATA = ${dataString};
         }, 2000);
       }
     } finally {
+      // 確保無論如何（即使飛書同步失敗或離線降級），都必須呼叫渲染函數以完整載入網頁畫面！
+      renderTimeline();
+      updateDatalist();
+      renderMasterGrid();
+      renderActiveMap();
+      initAdminModule();
+
       isSyncing = false;
       if (syncBtn) {
         syncBtn.classList.remove("spinning");
