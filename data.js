@@ -306,7 +306,7 @@ window.CEREMONY_DATA = {
       roles: [
         { id: "lamp_flip", title: "翻亮大眾燈", assignee: "洪秀媛(傳禪)、葉美綺(法拈)", desc: "在走廊快速將 9 盤大眾燈 (共 108 盞) 翻亮。" },
         { id: "lamp_control", title: "控燈人員", assignee: "呂秀琴(傳目)", desc: "開始傳燈時負責關閉室內明燈、開啟大門。" },
-        { id: "lamp_tray_push", title: "遞燈托盤與推車", assignee: "葉美綺(法拈)、洪秀媛(傳禪)、江美珠(傳晶)", desc: "清淨前門推入燈車於西單櫃前，由西單一一遞托盤上呈給師父。" },
+        { id: "lamp_tray_push", title: "遞燈托盤與推車", assignee: "葉美綺(法拈)、洪秀媛(傳禪)、江美珠(傳晶)", desc: "清淨前門推入燈車於西單櫃前，由西單一一遞大眾燈托盤上呈給師父。" },
         { id: "lamp_receiver", title: "學員長接燈傳燈", assignee: "各組學員長", desc: "東單排班上台接燈，捧回小組傳燈，最後捧1盞站在佛前 (中留空位) 帶唱。" },
         { id: "lamp_choir_lead", title: "助唱引導", assignee: "江美珠(傳晶)", desc: "手持無線麥克風，引導及協助大眾捧燈齊唱《獻給導師》。" },
         { id: "lamp_collect_left", title: "收剩餘燈具", assignee: "江美惠(傳彿)、賴素綿(法平)", desc: "將剩下的燈收於 1 盤，放置在禪堂大門內左側黑色座墊上，待補滿摩尼寶珠燈板空缺。" }
