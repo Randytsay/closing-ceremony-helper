@@ -1149,18 +1149,24 @@ document.addEventListener("DOMContentLoaded", () => {
       
       let rolesFormHtml = "";
       stage.roles.forEach(role => {
-        // 生成下拉選單選項
-        let selectOptionsHtml = `<option value="XXX" ${role.assignee === "XXX" ? "selected" : ""}>XXX (空缺)</option>`;
-        
         // 確保目前指派的人名，即使不在 volunteerPool 中也能顯示在下拉選單裡
         const currentAssignees = role.assignee.split(/[,、.\s]/).map(n => n.trim());
         const combinedPool = Array.from(new Set([...volunteerPool, ...currentAssignees]));
 
+        // 判斷下拉選單預設應該選取哪一項
+        let selectedValue = "CUSTOM";
+        if (role.assignee === "XXX") {
+          selectedValue = "XXX";
+        } else if (combinedPool.includes(role.assignee)) {
+          selectedValue = role.assignee;
+        }
+
+        let selectOptionsHtml = `<option value="XXX" ${selectedValue === "XXX" ? "selected" : ""}>XXX (空缺)</option>`;
+
         combinedPool.forEach(name => {
           if (name && name !== "XXX") {
-            // 如果 role.assignee 是多個名字 (e.g. "義工A, 義工B")，我們只要 assignee 內包含它就先選中是不對的。
-            // 這裡如果是單選下拉選單，只要 assignee === name 就選中；否則，我們也提供直接 text input 修改以利多人排班！
-            const isSelected = role.assignee === name;
+            // 如果 role.assignee 是多個名字 (e.g. "義工A, 義工B")，我們提供直接 text input 修改以利多人排班！
+            const isSelected = selectedValue === name;
             selectOptionsHtml += `<option value="${name}" ${isSelected ? "selected" : ""}>${name}</option>`;
           }
         });
@@ -1170,7 +1176,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <span class="editor-role-label">${role.title}</span>
             <select class="admin-role-select" data-stage-id="${stage.id}" data-role-id="${role.id}">
               ${selectOptionsHtml}
-              <option value="CUSTOM">✍️ 手動輸入/多人分工...</option>
+              <option value="CUSTOM" ${selectedValue === "CUSTOM" ? "selected" : ""}>✍️ 手動輸入/多人分工...</option>
             </select>
             <input type="text" class="admin-role-input" data-stage-id="${stage.id}" data-role-id="${role.id}" value="${role.assignee}" placeholder="指派人員名字..." />
           </div>
