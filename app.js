@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <thead>
                   <tr>
                     <th style="width: 25%;">職稱</th>
-                    <th style="width: 20%;">派任人員</th>
+                    <th style="width: 20%;">執事人員</th>
                     <th style="width: 45%;">工作內容</th>
                     <th style="width: 10%; text-align: right;">站位</th>
                   </tr>
