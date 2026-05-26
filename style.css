@@ -1773,3 +1773,28 @@ body {
 [data-theme="dark"] .zone-row.highlighted {
   background: rgba(212, 175, 55, 0.12) !important;
 }
+
+/* 靜態底圖樣式 */
+.static-map-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.static-map-image {
+  width: 100%;
+  height: auto;
+  max-width: 650px;
+  border-radius: 16px;
+  border: 1.5px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: block;
+}
+
+.static-map-image:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}

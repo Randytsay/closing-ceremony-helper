@@ -548,262 +548,30 @@ document.addEventListener("DOMContentLoaded", () => {
     highlightTableRow(roleId);
   }
 
-  // 生成 地圖 A：結業頒證 SVG
+  // 生成 地圖 A：結業頒證
   function generateAwardsMapSvg() {
-    const stageRoles = getRolesForMap("map_awards");
-    const awardsPositions = {
-      "award_hand_cert":      { x: 880, y: 100, align: "left"   },
-      "award_pull_line":      { x: 582, y: 400, align: "center" },
-      "award_guide_up":       { x: 770, y: 165, align: "left"   },
-      "award_guide_down":     { x: 490, y: 175, align: "right"  },
-      "award_cut_pos":        { x: 582, y: 70,  align: "center" },
-      "award_check_list":     { x: 360, y: 500, align: "right"  },
-      "award_corridor_guide": { x: 190, y: 380, align: "right"  },
-      "award_emcee":          { x: 890, y: 220, align: "left"   },
-      "award_audio":          { x: 750, y: 550, align: "right"  },
-      "award_photo":          { x: 582, y: 280, align: "center" },
-      "award_light":          { x: 360, y: 220, align: "right"  }
-    };
-
-    let spotsHtml = "";
-    stageRoles.forEach(roleObj => {
-      const pos = awardsPositions[roleObj.role.id];
-      if (!pos) return;
-      const isUnassigned = !roleObj.role.assignee || roleObj.role.assignee === "XXX";
-      const dotOpacity = isUnassigned ? "0.45" : "1";
-      const assignee = isUnassigned ? "（待指派）" : roleObj.role.assignee;
-      const label = roleObj.position ? roleObj.position.label : roleObj.role.title.substring(0, 6);
-
-      const bw = 170; // High visibility
-      const bh = 52;
-      let bx, by, lx2, ly2;
-
-      if (pos.align === "right") {
-        bx = pos.x - bw - 35;
-        by = pos.y - bh / 2;
-        lx2 = bx + bw;
-        ly2 = pos.y;
-      } else if (pos.align === "left") {
-        bx = pos.x + 35;
-        by = pos.y - bh / 2;
-        lx2 = bx;
-        ly2 = pos.y;
-      } else {
-        // center
-        bx = pos.x - bw / 2;
-        if (pos.y < 400) {
-          by = pos.y + 35;
-          lx2 = pos.x;
-          ly2 = by;
-        } else {
-          by = pos.y - bh - 35;
-          lx2 = pos.x;
-          ly2 = by + bh;
-        }
-      }
-
-      spotsHtml += `
-        <g class="svg-officer-spot" data-role-id="${roleObj.role.id}" style="cursor: pointer;">
-          <!-- Connecting Line -->
-          <line x1="${pos.x}" y1="${pos.y}" x2="${lx2}" y2="${ly2}"
-                stroke="var(--color-gold)" stroke-width="2.5" stroke-dasharray="4,3" opacity="${dotOpacity}" />
-          <!-- Officer Spot (Circle) -->
-          <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="22" style="opacity:${dotOpacity}; fill: var(--bg-primary); stroke: var(--color-gold); stroke-width: 3.5;" />
-          <text class="svg-officer-label" x="${pos.x}" y="${pos.y}" style="font-size: 16px; font-weight: 900; fill: #ffffff; text-anchor: middle; dominant-baseline: central; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));">執</text>
-          <!-- Callout Box -->
-          <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="8"
-                fill="var(--bg-secondary)" stroke="var(--color-gold)" stroke-width="2.2"
-                opacity="${dotOpacity}" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));" />
-          <text x="${bx + bw/2}" y="${by + 20}" class="svg-chair-label"
-                style="font-weight: 700; font-size: 15px; fill: var(--text-primary); text-anchor: middle;">${label}</text>
-          <text x="${bx + bw/2}" y="${by + 40}" class="svg-chair-label"
-                style="font-size: 14px; fill: var(--color-gold); font-weight: 700; text-anchor: middle;"
-                >${assignee.length > 10 ? assignee.substring(0,10)+"…" : assignee}</text>
-        </g>
-      `;
-    });
-
     return `
-      <svg class="svg-element vertical" viewBox="0 0 1165 1404" width="100%" height="100%">
-        <!-- Background Hand-drawn Image -->
-        <image href="清淨.jpg" x="0" y="0" width="1165" height="1404" />
-        
-        <!-- Overlaid Spots -->
-        ${spotsHtml}
-      </svg>
+      <div class="static-map-container" style="position: relative; width: 100%; display: flex; justify-content: center;">
+        <img src="清淨.jpg" class="static-map-image" alt="清淨講堂結業頒證平面圖" />
+      </div>
     `;
   }
 
-  // 生成 地圖 B：傳燈與發願 SVG
+  // 生成 地圖 B：傳燈與發願
   function generateLampsMapSvg() {
-    const stageRoles = getRolesForMap("map_lamps");
-    const lampsPositions = {
-      "lamp_flip":            { x: 190, y: 150, align: "right"  },
-      "lamp_control":         { x: 360, y: 220, align: "right"  },
-      "lamp_tray_push":       { x: 400, y: 150, align: "right"  },
-      "lamp_receiver":        { x: 582, y: 140, align: "center" },
-      "lamp_choir_lead":      { x: 770, y: 165, align: "left"   },
-      "lamp_collect_left":    { x: 190, y: 380, align: "right"  },
-      "vow_stand":            { x: 700, y: 70,  align: "left"   },
-      "vow_monk_lamp":        { x: 880, y: 100, align: "left"   },
-      "vow_abbot_lamp":       { x: 582, y: 70,  align: "center" },
-      "vow_mic":              { x: 890, y: 220, align: "left"   }
-    };
-
-    let spotsHtml = "";
-    stageRoles.forEach(roleObj => {
-      const pos = lampsPositions[roleObj.role.id];
-      if (!pos) return;
-      const isUnassigned = !roleObj.role.assignee || roleObj.role.assignee === "XXX";
-      const dotOpacity = isUnassigned ? "0.45" : "1";
-      const assignee = isUnassigned ? "（待指派）" : roleObj.role.assignee;
-      const label = roleObj.position ? roleObj.position.label : roleObj.role.title.substring(0, 6);
-
-      const bw = 170;
-      const bh = 52;
-      let bx, by, lx2, ly2;
-
-      if (pos.align === "right") {
-        bx = pos.x - bw - 35;
-        by = pos.y - bh / 2;
-        lx2 = bx + bw;
-        ly2 = pos.y;
-      } else if (pos.align === "left") {
-        bx = pos.x + 35;
-        by = pos.y - bh / 2;
-        lx2 = bx;
-        ly2 = pos.y;
-      } else {
-        // center
-        bx = pos.x - bw / 2;
-        if (pos.y < 400) {
-          by = pos.y + 35;
-          lx2 = pos.x;
-          ly2 = by;
-        } else {
-          by = pos.y - bh - 35;
-          lx2 = pos.x;
-          ly2 = by + bh;
-        }
-      }
-
-      spotsHtml += `
-        <g class="svg-officer-spot" data-role-id="${roleObj.role.id}" style="cursor: pointer;">
-          <!-- Connecting Line -->
-          <line x1="${pos.x}" y1="${pos.y}" x2="${lx2}" y2="${ly2}"
-                stroke="var(--color-gold)" stroke-width="2.5" stroke-dasharray="4,3" opacity="${dotOpacity}" />
-          <!-- Officer Spot (Circle) -->
-          <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="22" style="opacity:${dotOpacity}; fill: var(--bg-primary); stroke: var(--color-gold); stroke-width: 3.5;" />
-          <text class="svg-officer-label" x="${pos.x}" y="${pos.y}" style="font-size: 16px; font-weight: 900; fill: #ffffff; text-anchor: middle; dominant-baseline: central; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));">執</text>
-          <!-- Callout Box -->
-          <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="8"
-                fill="var(--bg-secondary)" stroke="var(--color-gold)" stroke-width="2.2"
-                opacity="${dotOpacity}" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));" />
-          <text x="${bx + bw/2}" y="${by + 20}" class="svg-chair-label"
-                style="font-weight: 700; font-size: 15px; fill: var(--text-primary); text-anchor: middle;">${label}</text>
-          <text x="${bx + bw/2}" y="${by + 40}" class="svg-chair-label"
-                style="font-size: 14px; fill: var(--color-gold); font-weight: 700; text-anchor: middle;"
-                >${assignee.length > 10 ? assignee.substring(0,10)+"…" : assignee}</text>
-        </g>
-      `;
-    });
-
     return `
-      <svg class="svg-element vertical" viewBox="0 0 1165 1404" width="100%" height="100%">
-        <!-- Background Hand-drawn Image -->
-        <image href="清淨.jpg" x="0" y="0" width="1165" height="1404" />
-        
-        <!-- Overlaid Spots -->
-        ${spotsHtml}
-      </svg>
+      <div class="static-map-container" style="position: relative; width: 100%; display: flex; justify-content: center;">
+        <img src="清淨.jpg" class="static-map-image" alt="清淨講堂傳燈與發願平面圖" />
+      </div>
     `;
   }
 
-  // 生成 地圖 C：禪堂供燈供僧 SVG（直式，仿原 Word 圖比例）
+  // 生成 地圖 C：禪堂供燈供僧
   function generateOfferingMapSvg() {
-    const stageRoles = getRolesForMap("map_offering");
-    const offeringPositions = {
-      "off_pull_hall":      { x: 542, y: 480, align: "center" },
-      "off_pull_out":       { x: 542, y: 550, align: "center" },
-      "off_cut_east":       { x: 640, y: 420, align: "left"   },
-      "off_cut_west":       { x: 440, y: 420, align: "right"  },
-      "off_guide_east_post":{ x: 840, y: 640, align: "left"   },
-      "off_guide_west_post":{ x: 240, y: 640, align: "right"  },
-      "off_demo_east":      { x: 730, y: 180, align: "left"   },
-      "off_demo_west":      { x: 350, y: 180, align: "right"  },
-      "off_refill_lamp":    { x: 542, y: 350, align: "center" },
-      "off_collect_redbag": { x: 730, y: 230, align: "left"   },
-      "off_control_light":  { x: 940, y: 540, align: "left"   },
-      "off_chairs":         { x: 140, y: 145, align: "right"  },
-      "off_card_hold":      { x: 542, y: 280, align: "center" },
-    };
-
-    let spotsHtml = "";
-    stageRoles.forEach(roleObj => {
-      const pos = offeringPositions[roleObj.role.id];
-      if (!pos) return;
-      const isUnassigned = !roleObj.role.assignee || roleObj.role.assignee === "XXX";
-      const dotOpacity = isUnassigned ? "0.45" : "1";
-      const assignee = isUnassigned ? "（待指派）" : roleObj.role.assignee;
-      const label = roleObj.position ? roleObj.position.label : roleObj.role.title.substring(0, 6);
-
-      const bw = 170;
-      const bh = 52;
-      let bx, by, lx2, ly2;
-
-      if (pos.align === "right") {
-        bx = pos.x - bw - 35;
-        by = pos.y - bh / 2;
-        lx2 = bx + bw;
-        ly2 = pos.y;
-      } else if (pos.align === "left") {
-        bx = pos.x + 35;
-        by = pos.y - bh / 2;
-        lx2 = bx;
-        ly2 = pos.y;
-      } else {
-        // center
-        bx = pos.x - bw / 2;
-        if (pos.y < 400) {
-          by = pos.y + 35;
-          lx2 = pos.x;
-          ly2 = by;
-        } else {
-          by = pos.y - bh - 35;
-          lx2 = pos.x;
-          ly2 = by + bh;
-        }
-      }
-
-      spotsHtml += `
-        <g class="svg-officer-spot" data-role-id="${roleObj.role.id}" style="cursor: pointer;">
-          <!-- Connecting Line -->
-          <line x1="${pos.x}" y1="${pos.y}" x2="${lx2}" y2="${ly2}"
-                stroke="var(--color-gold)" stroke-width="2.5" stroke-dasharray="4,3" opacity="${dotOpacity}" />
-          <!-- Officer Spot (Circle) -->
-          <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="22" style="opacity:${dotOpacity}; fill: var(--bg-primary); stroke: var(--color-gold); stroke-width: 3.5;" />
-          <text class="svg-officer-label" x="${pos.x}" y="${pos.y}" style="font-size: 16px; font-weight: 900; fill: #ffffff; text-anchor: middle; dominant-baseline: central; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));">執</text>
-          <!-- Callout Box -->
-          <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="8"
-                fill="var(--bg-secondary)" stroke="var(--color-gold)" stroke-width="2.2"
-                opacity="${dotOpacity}" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));" />
-          <text x="${bx + bw/2}" y="${by + 20}" class="svg-chair-label"
-                style="font-weight: 700; font-size: 15px; fill: var(--text-primary); text-anchor: middle;">${label}</text>
-          <text x="${bx + bw/2}" y="${by + 40}" class="svg-chair-label"
-                style="font-size: 14px; fill: var(--color-gold); font-weight: 700; text-anchor: middle;"
-                >${assignee.length > 10 ? assignee.substring(0,10)+"…" : assignee}</text>
-        </g>
-      `;
-    });
-
     return `
-      <svg class="svg-element vertical" viewBox="0 0 1085 1508" width="100%" height="100%">
-        <!-- Background Hand-drawn Image -->
-        <image href="禪堂.jpg" x="0" y="0" width="1085" height="1508" />
-        
-        <!-- Overlaid Spots -->
-        ${spotsHtml}
-      </svg>
+      <div class="static-map-container" style="position: relative; width: 100%; display: flex; justify-content: center;">
+        <img src="禪堂.jpg" class="static-map-image" alt="禪堂供燈與供僧平面圖" />
+      </div>
     `;
   }
 
