@@ -64,11 +64,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const timelineContainer = document.getElementById("timeline-list");
 
   function renderTimeline() {
+    // 檢查當前哪一個流程節點是展開狀態
+    const currentlyExpandedCard = timelineContainer.querySelector(".timeline-card.expanded");
+    const expandedStageId = currentlyExpandedCard ? currentlyExpandedCard.id.replace("timeline-stage-", "") : null;
+
     timelineContainer.innerHTML = "";
     
     data.stages.forEach((stage, index) => {
+      // 如果有已展開的節點，則維持該節點展開；若是首次載入則預設展開第一步
+      const isExpanded = expandedStageId ? (stage.id === expandedStageId) : (index === 0);
+      
       const card = document.createElement("div");
-      card.className = `timeline-card ${index === 0 ? "active expanded" : ""}`;
+      card.className = `timeline-card ${isExpanded ? "active expanded" : ""}`;
       card.id = `timeline-stage-${stage.id}`;
       
       // 注意事項清單生成
@@ -99,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
           <span class="timeline-arrow">▼</span>
         </div>
-        <div class="timeline-card-content" style="${index === 0 ? "display: block;" : ""}">
+        <div class="timeline-card-content" style="${isExpanded ? "display: block;" : "display: none;"}">
           <p class="timeline-desc">${stage.desc}</p>
           
           ${stage.notes.length > 0 ? `
@@ -1245,6 +1252,8 @@ window.CEREMONY_DATA = ${dataString};
 
     console.log("📡 正在向飛書雲端同步最新班表...");
 
+    let hasChanges = false;
+
     try {
       const response = await fetch('/api/get-data');
       const result = await response.json();
@@ -1257,8 +1266,6 @@ window.CEREMONY_DATA = ${dataString};
           ? sheetRows.slice(1)
           : sheetRows;
           
-        let hasChanges = false;
-
         // 將飛書數據覆蓋至 memory 中的 window.CEREMONY_DATA
         dataRows.forEach(row => {
           if (row && row.length >= 3) {
@@ -1299,12 +1306,16 @@ window.CEREMONY_DATA = ${dataString};
         }, 2000);
       }
     } finally {
-      // 確保無論如何（即使飛書同步失敗或離線降級），都必須呼叫渲染函數以完整載入網頁畫面！
-      renderTimeline();
-      updateDatalist();
-      renderMasterGrid();
-      renderActiveMap();
-      initAdminModule();
+      // 僅在資料有變更或初次載入時，才執行重新渲染，避免無謂的頁面狀態重設與摺疊收合！
+      const isInitialLoad = (timelineContainer.children.length === 0);
+      if (hasChanges || isInitialLoad) {
+        console.log("🔄 [Render] 檢測到排班異動，正在更新前端畫面元件...");
+        renderTimeline();
+        updateDatalist();
+        renderMasterGrid();
+        renderActiveMap();
+        initAdminModule();
+      }
 
       isSyncing = false;
       if (syncBtn) {
