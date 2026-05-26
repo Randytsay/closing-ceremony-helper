@@ -128,7 +128,7 @@ window.CEREMONY_DATA = {
         { id: "award_check_list", title: "核對名單", assignee: "曾雅蘭(傳昧)、田品萱(法印)", desc: "現場核對出缺席與上台名單，如有缺席者，需通知遞證書人員將其證書置底。" },
         { id: "award_corridor_guide", title: "走廊引導", assignee: "張嘉年(法足)", desc: "在清淨後方及廊道引導排班的學員動線。" },
         { id: "award_emcee", title: "司儀", assignee: "詹佩宜(法憫)", desc: "呼「第X組」出班，主持典禮節奏。" },
-        { id: "award_audio", title: "音響", assignee: "蔡耀文(法果)", desc: "負責播放《在哪裡》歌曲，配合拉班與拍照節奏控制音量。" },
+        { id: "award_audio", title: "音響", assignee: "XXX", desc: "負責播放《在哪裡》歌曲，配合拉班與拍照節奏控制音量。" },
         { id: "award_photo", title: "攝影拍照", assignee: "牛靖涵(傳郁)", desc: "負責舞台合照與現場花絮拍攝。" },
         { id: "award_light", title: "控燈", assignee: "黃湘婷(傳麗)", desc: "維持大合照時講堂最佳照明亮度。" }
       ],
@@ -230,7 +230,7 @@ window.CEREMONY_DATA = {
       roles: [
         { id: "bodhi_pull_leader", title: "學長拉班", assignee: "張嘉年(法足)", desc: "於全勤獎頒發時，引導學員長團隊出位至講堂後方集合排班。" },
         { id: "bodhi_pull_staff", title: "課務拉班", assignee: "張嘉年(法足)", desc: "於全勤獎頒發時，引導課務團隊出位至講堂後方集合排班。" },
-        { id: "bodhi_leader_rep", title: "總學長領獎代表", assignee: "吳漳(傳堅)", desc: "代表全體學員長與學長團隊上台接受住持法師頒獎。" },
+        { id: "bodhi_leader_rep", title: "總學長領獎代表", assignee: "蔡耀文(法果)", desc: "代表全體學員長與學長團隊上台接受住持法師頒獎。" },
         { id: "bodhi_staff_rep", title: "課務長領獎代表", assignee: "課務長", desc: "代表全體課務團隊上台接受住持法師頒獎。" }
       ],
       mapId: "map_awards",
@@ -275,7 +275,7 @@ window.CEREMONY_DATA = {
       ],
       roles: [
         { id: "sermon_emcee", title: "司儀呼班", assignee: "詹佩宜(法憫)", desc: "呼班起立，問訊，恭請住持法師慈悲開示。" },
-        { id: "sermon_audio", title: "音響播影片", assignee: "蔡耀文(法果)", desc: "播放「我學佛•我分享」影片與麥克風音量調控。" },
+        { id: "sermon_audio", title: "音響播影片", assignee: "XXX", desc: "播放「我學佛•我分享」影片與麥克風音量調控。" },
         { id: "sermon_light", title: "控燈(影片)", assignee: "葉燈超(法燈)", desc: "播放影片時關燈，開示時恢復講堂明亮。" }
       ],
       mapId: "map_awards",
