@@ -806,10 +806,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 水晶紅包盤（東西兩側各1個）
     const platesHtml = `
-      <ellipse cx="95"  cy="265" rx="28" ry="18" fill="rgba(176,224,230,0.15)" stroke="#87ceeb" stroke-width="1.5" />
-      <text x="95"  y="269" class="svg-chair-label" style="font-size:9px; fill:#87ceeb;">水晶盤(西)</text>
-      <ellipse cx="505" cy="265" rx="28" ry="18" fill="rgba(176,224,230,0.15)" stroke="#87ceeb" stroke-width="1.5" />
-      <text x="505" y="269" class="svg-chair-label" style="font-size:9px; fill:#87ceeb;">水晶盤(東)</text>
+      <ellipse cx="95"  cy="180" rx="28" ry="18" fill="rgba(176,224,230,0.15)" stroke="#87ceeb" stroke-width="1.5" />
+      <text x="95"  y="184" class="svg-chair-label" style="font-size:9px; fill:#87ceeb;">水晶盤(西)</text>
+      <ellipse cx="505" cy="180" rx="28" ry="18" fill="rgba(176,224,230,0.15)" stroke="#87ceeb" stroke-width="1.5" />
+      <text x="505" y="184" class="svg-chair-label" style="font-size:9px; fill:#87ceeb;">水晶盤(東)</text>
     `;
 
     // 圓柱（前後各2根）
@@ -839,17 +839,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const offeringPositions = {
       "off_pull_hall":      { x: 300, y: 870, align: "center" },
       "off_pull_out":       { x: 300, y: 790, align: "center" },
-      "off_cut_east":       { x: 480, y: 580, align: "left"   },
-      "off_cut_west":       { x: 120, y: 580, align: "right"  },
+      "off_cut_east":       { x: 480, y: 420, align: "left"   },
+      "off_cut_west":       { x: 120, y: 420, align: "right"  },
       "off_guide_east_post":{ x: 480, y: 700, align: "left"   },
       "off_guide_west_post":{ x: 120, y: 700, align: "right"  },
-      "off_demo_east":      { x: 450, y: 390, align: "left"   },
-      "off_demo_west":      { x: 150, y: 390, align: "right"  },
+      "off_demo_east":      { x: 490, y: 220, align: "left"   },
+      "off_demo_west":      { x: 110, y: 220, align: "right"  },
       "off_refill_lamp":    { x: 300, y: 490, align: "center" },
-      "off_collect_redbag": { x: 450, y: 275, align: "left"   },
+      "off_collect_redbag": { x: 450, y: 200, align: "right"  },
       "off_control_light":  { x: 35,  y: 780, align: "left"   },
       "off_chairs":         { x: 35,  y: 200, align: "left"   },
-      "off_card_hold":      { x: 300, y: 540, align: "center" },
+      "off_card_hold":      { x: 300, y: 340, align: "center" },
     };
 
     stageRoles.forEach(roleObj => {
@@ -884,7 +884,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // viewBox 使用 600×920（直式，仿 Word 圖比例）
     return `
-      <svg class="svg-element" viewBox="0 0 600 920" width="100%" height="100%">
+      <svg class="svg-element vertical" viewBox="0 0 600 920" width="100%" height="100%">
         <!-- 禪堂牆體 -->
         <rect class="svg-hall-bg" x="0" y="0" width="600" height="920" />
         <rect class="svg-wall" x="40" y="30" width="520" height="860" rx="12" />
@@ -946,6 +946,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const rolesList = [];
     data.stages.forEach(stage => {
       if (stage.mapId === mapId) {
+        // Special case: Map A (結業頒證) should only display core roles of the "awards_grad" stage
+        // as drawn in the Word document. The rest will only be displayed in the tables.
+        if (mapId === "map_awards" && stage.id !== "awards_grad") {
+          return;
+        }
         stage.roles.forEach(role => {
           // 找到該角色在 positions 中的座標
           const pos = stage.positions ? stage.positions.find(p => p.roleId === role.id) : null;

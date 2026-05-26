@@ -806,6 +806,11 @@ body {
   display: block;
 }
 
+.svg-element.vertical {
+  max-height: none;
+  max-width: 600px;
+}
+
 /* SVG 元素樣式定義 */
 .svg-hall-bg { fill: var(--bg-tertiary); }
 .svg-wall { stroke: var(--border-color); stroke-width: 3; fill: none; }

@@ -13,7 +13,7 @@ window.CEREMONY_DATA = {
   maps: {
     map_awards: {
       name: "清淨講堂【結業頒證】",
-      description: "清淨講堂平面圖，含 1-12 組座椅及頒證執事站位"
+      description: "清淨講堂平面圖，含 1-9 組座椅及頒證執事站位"
     },
     map_lamps: {
       name: "清淨講堂【傳燈與發願】",
@@ -102,7 +102,7 @@ window.CEREMONY_DATA = {
       ],
       roles: [
         { id: "award_hand_cert", title: "遞證書與獎品", assignee: "林麗嬌(傳霈)、江美惠(傳彿)", desc: "由東單遞送證書＆獎品，可先放2盤在住持法師講桌上。" },
-        { id: "award_pull_line", title: "中央走道拉班", assignee: "賴素綿(法平)、許藝娟(法慈)", desc: "負責中央走道拉班，拉班順序為第 1 ➡ 12 組，一組一組上台領證。" },
+        { id: "award_pull_line", title: "中央走道拉班", assignee: "賴素綿(法平)、許藝娟(法慈)", desc: "負責中央走道拉班，拉班順序為第 1 ➡ 9 組，一組一組上台領證。" },
         { id: "award_guide_up", title: "引導上台", assignee: "鄭秀美(法岫)", desc: "在講堂前方引導學員依序上台定位。" },
         { id: "award_guide_down", title: "引導下台歸位", assignee: "張雅雯(法空)", desc: "引導拍照完學員走師父椅後方，從西單前廊出，再由講堂後門歸位。" },
         { id: "award_cut_pos", title: "切班定位(拍照)", assignee: "詹瑞貞(法持)、趙佳欣(法佳)", desc: "負責舞台前方東西兩側，調整學員切班與合照定位站姿。" },
@@ -116,15 +116,15 @@ window.CEREMONY_DATA = {
       mapId: "map_awards",
       positions: [
         { roleId: "award_hand_cert", label: "遞證獎", zone: "🏆 台上佛前", x: 570, y: 70, align: "left" },
-        { roleId: "award_pull_line", label: "中央拉班", zone: "🚶 中央走道", x: 450, y: 220, align: "center" },
+        { roleId: "award_pull_line", label: "中央拉班", zone: "🚶 中央走道", x: 450, y: 430, align: "right" },
         { roleId: "award_guide_up", label: "引導上台", zone: "🏆 台上佛前", x: 620, y: 110, align: "left" },
         { roleId: "award_guide_down", label: "引導歸位", zone: "🏆 台上佛前", x: 280, y: 110, align: "right" },
         { roleId: "award_cut_pos", label: "切班定位", zone: "🏆 台上佛前", x: 530, y: 95, align: "center" },
-        { roleId: "award_check_list", label: "核對名單", zone: "📄 後方走廊＆登錄區", x: 740, y: 160, align: "right" },
-        { roleId: "award_corridor_guide", label: "走廊引導", zone: "📄 後方走廊＆登錄區", x: 780, y: 260, align: "right" },
+        { roleId: "award_check_list", label: "核對名單", zone: "📄 後方走廊＆登錄區", x: 770, y: 480, align: "right" },
+        { roleId: "award_corridor_guide", label: "走廊引導", zone: "📄 後方走廊＆登錄區", x: 770, y: 410, align: "right" },
         { roleId: "award_emcee", label: "司儀", zone: "🎤 台前與司儀", x: 200, y: 90, align: "center" },
         { roleId: "award_audio", label: "音響", zone: "🔹 控台（西前角）", x: 120, y: 450, align: "center" },
-        { roleId: "award_photo", label: "攝影", zone: "🚶 中央走道", x: 450, y: 180, align: "center" },
+        { roleId: "award_photo", label: "攝影", zone: "🚶 中央走道", x: 450, y: 300, align: "left" },
         { roleId: "award_light", label: "控燈", zone: "🔹 控台（西前角）", x: 120, y: 390, align: "center" }
       ]
     },
@@ -320,7 +320,7 @@ window.CEREMONY_DATA = {
         { roleId: "vow_stand", label: "遞經架", zone: "🎤 台前與司儀", x: 380, y: 70, align: "center" },
         { roleId: "vow_monk_lamp", label: "遞大眾燈", zone: "🎤 台前與司儀", x: 300, y: 70, align: "right" },
         { roleId: "vow_abbot_lamp", label: "遞主法燈", zone: "🎤 台前與司儀", x: 600, y: 70, align: "left" },
-        { roleId: "vow_mic", label: "遞麥克風", zone: "🎤 台前與司儀", x: 580, y: 140, align: "left" }
+        { roleId: "vow_mic", label: "遞麥克風", zone: "🎤 台前與司儀", x: 580, y: 80, align: "left" }
       ]
     },
     {
