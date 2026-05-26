@@ -434,7 +434,55 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("detail-role-title").textContent = matchedStage.title;
       document.getElementById("detail-role-time").textContent = matchedStage.time;
       document.getElementById("detail-role-name").textContent = matchedRole.title;
-      document.getElementById("detail-role-assignee").textContent = matchedRole.assignee;
+      
+      // 將名字文字改為「即時可點選編輯」的下拉選單，讓使用者直接在地圖上編輯人名！
+      const assigneeContainer = document.getElementById("detail-role-assignee");
+      assigneeContainer.innerHTML = "";
+      
+      const select = document.createElement("select");
+      select.className = "map-assignee-select";
+      select.style.padding = "6px 12px";
+      select.style.fontSize = "16px";
+      select.style.fontWeight = "bold";
+      select.style.borderRadius = "8px";
+      select.style.border = "1.5px solid var(--border-color)";
+      select.style.background = "var(--bg-secondary)";
+      select.style.color = "var(--color-gold)";
+      select.style.cursor = "pointer";
+      select.style.outline = "none";
+      select.style.width = "100%";
+      select.style.maxWidth = "240px";
+
+      // 建立選項：確保當前指派人名即使不在 volunteerPool 中也能顯示在下拉選單裡
+      const currentAssignees = matchedRole.assignee.split(/[,、.\s]/).map(n => n.trim());
+      const combinedPool = Array.from(new Set([...volunteerPool, ...currentAssignees]));
+
+      let optionsHtml = `<option value="XXX" ${matchedRole.assignee === "XXX" ? "selected" : ""}>XXX (空缺)</option>`;
+      combinedPool.forEach(name => {
+        if (name && name !== "XXX") {
+          optionsHtml += `<option value="${name}" ${matchedRole.assignee === name ? "selected" : ""}>${name}</option>`;
+        }
+      });
+      select.innerHTML = optionsHtml;
+
+      // 綁定編輯變更事件
+      select.addEventListener("change", (e) => {
+        const newAssignee = e.target.value;
+        updateAssigneeInMemory(matchedStage.id, matchedRole.id, newAssignee);
+        
+        // 變更人名後，保持該點的高亮狀態！
+        setTimeout(() => {
+          const spots = svgMapWrapper.querySelectorAll(".svg-officer-spot");
+          spots.forEach(s => s.classList.remove("highlighted"));
+          const targetSpot = svgMapWrapper.querySelector(`.svg-officer-spot[data-role-id="${roleId}"]`);
+          if (targetSpot) {
+            targetSpot.classList.add("highlighted");
+          }
+        }, 100);
+      });
+
+      assigneeContainer.appendChild(select);
+      
       document.getElementById("detail-role-desc").textContent = matchedRole.desc;
       clickDetailsCard.style.display = "block";
     }
@@ -1069,10 +1117,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (role) {
         role.assignee = newAssignee;
         
-        // 即時重新渲染前台時間軸與搜尋，確保連動同步！
+        // 即時重新渲染所有前台介面，確保完全同步連動！
         renderTimeline();
         updateDatalist();
         renderMasterGrid();
+        renderActiveMap();
+        initAdminModule();
         
         // 即時雙向同步：寫回飛書雲端試算表
         syncWithFeishuCloud(roleId, newAssignee);
