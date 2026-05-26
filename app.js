@@ -797,7 +797,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let assigneesInputsHtml = "";
         currentAssignees.forEach((name, idx) => {
-          let selectOptionsHtml = `<option value="XXX" ${name === "XXX" ? "selected" : ""}>XXX (空缺)</option>`;
+          let selectOptionsHtml = `<option value="XXX" ${name === "XXX" ? "selected" : ""}>XXX (從缺)</option>`;
           
           let selectedValue = "CUSTOM";
           if (name === "XXX") {
