@@ -784,10 +784,10 @@ document.addEventListener("DOMContentLoaded", () => {
       
       let rolesFormHtml = "";
       stage.roles.forEach(role => {
-        // 拆分目前指派的多個姓名
+        // 拆分目前指派的多個姓名（在編輯器中必須保留 XXX 以便渲染空白下拉選單）
         let currentAssignees = role.assignee.split(/[,、.\s]/)
           .map(n => n.trim())
-          .filter(n => n.length > 0 && n !== "None" && n !== "XXX");
+          .filter(n => n.length > 0 && n !== "None");
 
         if (currentAssignees.length === 0) {
           currentAssignees = ["XXX"];
@@ -861,7 +861,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (r) {
               let assignees = r.assignee.split(/[,、.\s]/)
                 .map(n => n.trim())
-                .filter(n => n.length > 0 && n !== "None" && n !== "XXX");
+                .filter(n => n.length > 0 && n !== "None");
               assignees.push("XXX");
               const updated = assignees.join("、");
               updateAssigneeInMemory(stageId, roleId, updated);
