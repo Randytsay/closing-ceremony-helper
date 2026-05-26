@@ -5,6 +5,8 @@
 *.jpg
 !清淨桌次位置圖.jpg
 !清淨桌次位置圖2_cleaned.jpg
+!清淨.jpg
+!禪堂.jpg
 .DS_Store
 .vercel
 .env
