@@ -43,9 +43,9 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_awards",
       positions: [
-        { roleId: "reg_absent", label: "登錄名單", x: 780, y: 380, align: "right" },
-        { roleId: "explain_stickers", label: "說明豆貼", x: 780, y: 440, align: "right" },
-        { roleId: "guide_seats", label: "座位引導", x: 450, y: 300, align: "center" }
+        { roleId: "reg_absent", label: "登錄名單", zone: "📄 後方走廊＆登錄區", x: 780, y: 380, align: "right" },
+        { roleId: "explain_stickers", label: "說明豆貼", zone: "📄 後方走廊＆登錄區", x: 780, y: 440, align: "right" },
+        { roleId: "guide_seats", label: "座位引導", zone: "🚶 中央走道", x: 450, y: 300, align: "center" }
       ]
     },
     {
@@ -65,9 +65,9 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_awards",
       positions: [
-        { roleId: "rehearse_explain", label: "說明", x: 420, y: 70, align: "left" },
-        { roleId: "rehearse_demo", label: "示範學長", x: 480, y: 70, align: "left" },
-        { roleId: "weina_yuezhong", label: "維那.悅眾", x: 230, y: 130, align: "center" }
+        { roleId: "rehearse_explain", label: "說明", zone: "🎤 台前與司儀", x: 420, y: 70, align: "left" },
+        { roleId: "rehearse_demo", label: "示範學長", zone: "🎤 台前與司儀", x: 480, y: 70, align: "left" },
+        { roleId: "weina_yuezhong", label: "維那.悅眾", zone: "🍖 西單邊應法區", x: 230, y: 130, align: "center" }
       ]
     },
     {
@@ -85,7 +85,7 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_awards",
       positions: [
-        { roleId: "wel_emcee", label: "司儀", x: 200, y: 90, align: "center" }
+        { roleId: "wel_emcee", label: "司儀", zone: "🎤 台前與司儀", x: 200, y: 90, align: "center" }
       ]
     },
     {
@@ -115,17 +115,17 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_awards",
       positions: [
-        { roleId: "award_hand_cert", label: "遞證獎", x: 570, y: 70, align: "left" },
-        { roleId: "award_pull_line", label: "中央拉班", x: 450, y: 220, align: "center" },
-        { roleId: "award_guide_up", label: "引導上台", x: 620, y: 110, align: "left" },
-        { roleId: "award_guide_down", label: "引導歸位", x: 280, y: 110, align: "right" },
-        { roleId: "award_cut_pos", label: "切班定位", x: 530, y: 95, align: "center" },
-        { roleId: "award_check_list", label: "核對名單", x: 740, y: 160, align: "right" },
-        { roleId: "award_corridor_guide", label: "走廊引導", x: 780, y: 260, align: "right" },
-        { roleId: "award_emcee", label: "司儀", x: 200, y: 90, align: "center" },
-        { roleId: "award_audio", label: "音響", x: 120, y: 450, align: "center" },
-        { roleId: "award_photo", label: "攝影", x: 450, y: 180, align: "center" },
-        { roleId: "award_light", label: "控燈", x: 120, y: 390, align: "center" }
+        { roleId: "award_hand_cert", label: "遞證獎", zone: "🏆 台上佛前", x: 570, y: 70, align: "left" },
+        { roleId: "award_pull_line", label: "中央拉班", zone: "🚶 中央走道", x: 450, y: 220, align: "center" },
+        { roleId: "award_guide_up", label: "引導上台", zone: "🏆 台上佛前", x: 620, y: 110, align: "left" },
+        { roleId: "award_guide_down", label: "引導歸位", zone: "🏆 台上佛前", x: 280, y: 110, align: "right" },
+        { roleId: "award_cut_pos", label: "切班定位", zone: "🏆 台上佛前", x: 530, y: 95, align: "center" },
+        { roleId: "award_check_list", label: "核對名單", zone: "📄 後方走廊＆登錄區", x: 740, y: 160, align: "right" },
+        { roleId: "award_corridor_guide", label: "走廊引導", zone: "📄 後方走廊＆登錄區", x: 780, y: 260, align: "right" },
+        { roleId: "award_emcee", label: "司儀", zone: "🎤 台前與司儀", x: 200, y: 90, align: "center" },
+        { roleId: "award_audio", label: "音響", zone: "🔹 控台（西前角）", x: 120, y: 450, align: "center" },
+        { roleId: "award_photo", label: "攝影", zone: "🚶 中央走道", x: 450, y: 180, align: "center" },
+        { roleId: "award_light", label: "控燈", zone: "🔹 控台（西前角）", x: 120, y: 390, align: "center" }
       ]
     },
     {
@@ -143,7 +143,7 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_awards",
       positions: [
-        { roleId: "awards_full_check", label: "全勤核對拉班", x: 740, y: 220, align: "right" }
+        { roleId: "awards_full_check", label: "全勤核對拉班", zone: "📄 後方走廊＆登錄區", x: 740, y: 220, align: "right" }
       ]
     },
     {
@@ -161,7 +161,7 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_awards",
       positions: [
-        { roleId: "awards_sincere_check", label: "福慧核對拉班", x: 740, y: 220, align: "right" }
+        { roleId: "awards_sincere_check", label: "福慧核對拉班", zone: "📄 後方走廊＆登錄區", x: 740, y: 220, align: "right" }
       ]
     },
     {
@@ -178,7 +178,7 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_awards",
       positions: [
-        { roleId: "awards_diligence_check", label: "精進核對拉班", x: 740, y: 220, align: "right" }
+        { roleId: "awards_diligence_check", label: "精進核對拉班", zone: "📄 後方走廊＆登錄區", x: 740, y: 220, align: "right" }
       ]
     },
     {
@@ -195,7 +195,7 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_awards",
       positions: [
-        { roleId: "awards_study_check", label: "勤學核對拉班", x: 740, y: 220, align: "right" }
+        { roleId: "awards_study_check", label: "勤學核對拉班", zone: "📄 後方走廊＆登錄區", x: 740, y: 220, align: "right" }
       ]
     },
     {
@@ -216,10 +216,10 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_awards",
       positions: [
-        { roleId: "bodhi_pull_leader", label: "學長拉班", x: 740, y: 260, align: "right" },
-        { roleId: "bodhi_pull_staff", label: "課務拉班", x: 740, y: 300, align: "right" },
-        { roleId: "bodhi_leader_rep", label: "總學長", x: 500, y: 70, align: "left" },
-        { roleId: "bodhi_staff_rep", label: "課務長", x: 470, y: 70, align: "left" }
+        { roleId: "bodhi_pull_leader", label: "學長拉班", zone: "📄 後方走廊＆登錄區", x: 740, y: 260, align: "right" },
+        { roleId: "bodhi_pull_staff", label: "課務拉班", zone: "📄 後方走廊＆登錄區", x: 740, y: 300, align: "right" },
+        { roleId: "bodhi_leader_rep", label: "總學長", zone: "🏆 台上佛前", x: 500, y: 70, align: "left" },
+        { roleId: "bodhi_staff_rep", label: "課務長", zone: "🏆 台上佛前", x: 470, y: 70, align: "left" }
       ]
     },
     {
@@ -234,14 +234,14 @@ window.CEREMONY_DATA = {
       ],
       roles: [
         { id: "share_bell", title: "敲地鐘提醒", assignee: "邱建燁(法翱)", desc: "負責計時，超過 3 分鐘敲地鐘 1 聲，之後依時限加敲，提醒發言者。" },
-        { id: "share_speakers", title: "心得分享代表", assignee: "學員代表", desc: "準備心得稿，依司儀呼班上台站於法師旁分享。" },
+        { id: "share_speakers", title: "心得分享代表", assignee: "簡維君(第4組)、林玲玲/法穩(第5組)、黃品家/法敦(第5組)", desc: "準備心得稿，依司儀呼班上台站於法師旁分享。每人 3 分鐘。" },
         { id: "share_mic", title: "遞無線麥克風", assignee: "張雅雯(法空)、鄭秀美(法岫)", desc: "負責遞送無線麥克風給分享學員，並在分享結束後收回。" }
       ],
       mapId: "map_awards",
       positions: [
-        { roleId: "share_bell", label: "敲地鐘", x: 230, y: 130, align: "center" },
-        { roleId: "share_speakers", label: "分享學員", x: 500, y: 70, align: "left" },
-        { roleId: "share_mic", label: "遞麥人員", x: 300, y: 100, align: "center" }
+        { roleId: "share_bell", label: "敲地鐘", zone: "🍖 西單邊應法區", x: 230, y: 130, align: "center" },
+        { roleId: "share_speakers", label: "分享學員", zone: "🏆 台上佛前", x: 500, y: 70, align: "left" },
+        { roleId: "share_mic", label: "遞麥人員", zone: "🎤 台前與司儀", x: 300, y: 100, align: "center" }
       ]
     },
     {
@@ -261,9 +261,9 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_awards",
       positions: [
-        { roleId: "sermon_emcee", label: "司儀", x: 200, y: 90, align: "center" },
-        { roleId: "sermon_audio", label: "音響", x: 120, y: 450, align: "center" },
-        { roleId: "sermon_light", label: "控燈", x: 120, y: 390, align: "center" }
+        { roleId: "sermon_emcee", label: "司儀", zone: "🎤 台前與司儀", x: 200, y: 90, align: "center" },
+        { roleId: "sermon_audio", label: "音響", zone: "🔹 控台（西前角）", x: 120, y: 450, align: "center" },
+        { roleId: "sermon_light", label: "控燈", zone: "🔹 控台（西前角）", x: 120, y: 390, align: "center" }
       ]
     },
     {
@@ -289,12 +289,12 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_lamps",
       positions: [
-        { roleId: "lamp_flip", label: "翻燈人員(外廊)", x: 820, y: 250, align: "right" },
-        { roleId: "lamp_control", label: "控燈開門", x: 120, y: 390, align: "center" },
-        { roleId: "lamp_tray_push", label: "遞托盤/推車", x: 260, y: 150, align: "center" },
-        { roleId: "lamp_receiver", label: "學員長佛前排班", x: 450, y: 110, align: "center" },
-        { roleId: "lamp_choir_lead", label: "助唱", x: 580, y: 140, align: "left" },
-        { roleId: "lamp_collect_left", label: "收剩燈(禪堂門)", x: 80, y: 260, align: "left" }
+        { roleId: "lamp_flip", label: "翻燈(外廊)", zone: "🚪 講堂外廊", x: 820, y: 250, align: "right" },
+        { roleId: "lamp_control", label: "控燈開門", zone: "🔹 控台（西前角）", x: 120, y: 390, align: "center" },
+        { roleId: "lamp_tray_push", label: "遞托盤/推車", zone: "🍖 西單邊（遞燈車）", x: 260, y: 150, align: "center" },
+        { roleId: "lamp_receiver", label: "學員長佛前排班", zone: "🍖 西單邊（遞燈車）", x: 450, y: 110, align: "center" },
+        { roleId: "lamp_choir_lead", label: "助唱", zone: "🍖 西單邊（遞燈車）", x: 580, y: 140, align: "left" },
+        { roleId: "lamp_collect_left", label: "收剩燈(禪堂門)", zone: "🚪 禪堂門口", x: 80, y: 260, align: "left" }
       ]
     },
     {
@@ -317,10 +317,10 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_lamps",
       positions: [
-        { roleId: "vow_stand", label: "遞經架", x: 380, y: 70, align: "center" },
-        { roleId: "vow_monk_lamp", label: "遞大眾燈", x: 300, y: 70, align: "right" },
-        { roleId: "vow_abbot_lamp", label: "遞主法燈", x: 600, y: 70, align: "left" },
-        { roleId: "vow_mic", label: "遞麥克風", x: 580, y: 140, align: "left" }
+        { roleId: "vow_stand", label: "遞經架", zone: "🎤 台前與司儀", x: 380, y: 70, align: "center" },
+        { roleId: "vow_monk_lamp", label: "遞大眾燈", zone: "🎤 台前與司儀", x: 300, y: 70, align: "right" },
+        { roleId: "vow_abbot_lamp", label: "遞主法燈", zone: "🎤 台前與司儀", x: 600, y: 70, align: "left" },
+        { roleId: "vow_mic", label: "遞麥克風", zone: "🎤 台前與司儀", x: 580, y: 140, align: "left" }
       ]
     },
     {
@@ -354,19 +354,19 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_offering",
       positions: [
-        { roleId: "off_pull_hall", label: "拉班至禪堂", x: 450, y: 550, align: "center" },
-        { roleId: "off_pull_out", label: "拉班出位", x: 450, y: 450, align: "center" },
-        { roleId: "off_cut_east", label: "東前切班", x: 620, y: 350, align: "left" },
-        { roleId: "off_cut_west", label: "西前切班", x: 280, y: 350, align: "right" },
-        { roleId: "off_guide_east_post", label: "東後引導", x: 650, y: 480, align: "left" },
-        { roleId: "off_guide_west_post", label: "西後引導", x: 250, y: 480, align: "right" },
-        { roleId: "off_demo_east", label: "東示範", x: 550, y: 220, align: "center" },
-        { roleId: "off_demo_west", label: "西示範", x: 350, y: 220, align: "center" },
-        { roleId: "off_refill_lamp", label: "補燈排燈", x: 450, y: 300, align: "center" },
-        { roleId: "off_collect_redbag", label: "收紅包", x: 550, y: 160, align: "left" },
-        { roleId: "off_control_light", label: "控燈", x: 100, y: 480, align: "center" },
-        { roleId: "off_chairs", label: "排椅備椅", x: 100, y: 160, align: "center" },
-        { roleId: "off_card_hold", label: "大合照字卡", x: 450, y: 330, align: "center" }
+        { roleId: "off_pull_hall", label: "拉班至禪堂", zone: "🚪 禪堂入口走廊", x: 450, y: 550, align: "center" },
+        { roleId: "off_pull_out", label: "拉班出位", zone: "🚪 禪堂入口走廊", x: 450, y: 450, align: "center" },
+        { roleId: "off_cut_east", label: "東前切班", zone: "📍 禪堂內切班定位", x: 620, y: 350, align: "left" },
+        { roleId: "off_cut_west", label: "西前切班", zone: "📍 禪堂內切班定位", x: 280, y: 350, align: "right" },
+        { roleId: "off_guide_east_post", label: "東後引導", zone: "📍 禪堂內切班定位", x: 650, y: 480, align: "left" },
+        { roleId: "off_guide_west_post", label: "西後引導", zone: "📍 禪堂內切班定位", x: 250, y: 480, align: "right" },
+        { roleId: "off_demo_east", label: "東示範", zone: "🪷 佛前供燈供僧示範", x: 550, y: 220, align: "center" },
+        { roleId: "off_demo_west", label: "西示範", zone: "🪷 佛前供燈供僧示範", x: 350, y: 220, align: "center" },
+        { roleId: "off_refill_lamp", label: "補燈排燈", zone: "🪷 佛前供燈供僧示範", x: 450, y: 300, align: "center" },
+        { roleId: "off_collect_redbag", label: "收紅包", zone: "🪷 佛前供燈供僧示範", x: 550, y: 160, align: "left" },
+        { roleId: "off_control_light", label: "控燈", zone: "🔹 控台（西前角）", x: 100, y: 480, align: "center" },
+        { roleId: "off_chairs", label: "排椅備椅", zone: "🔹 控台（西前角）", x: 100, y: 160, align: "center" },
+        { roleId: "off_card_hold", label: "大合照字卡", zone: "🪷 佛前供燈供僧示範", x: 450, y: 330, align: "center" }
       ]
     },
     {
@@ -384,7 +384,7 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_offering",
       positions: [
-        { roleId: "farewell_emcee", label: "司儀", x: 200, y: 90, align: "center" }
+        { roleId: "farewell_emcee", label: "司儀", zone: "🎤 台前與司儀", x: 200, y: 90, align: "center" }
       ]
     },
     {
@@ -403,8 +403,8 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_awards",
       positions: [
-        { roleId: "ann_speaker", label: "法務布達", x: 420, y: 70, align: "left" },
-        { roleId: "ann_distributor", label: "發放證書", x: 450, y: 300, align: "center" }
+        { roleId: "ann_speaker", label: "法務布達", zone: "🎤 台前與司儀", x: 420, y: 70, align: "left" },
+        { roleId: "ann_distributor", label: "發放證書", zone: "🚶 中央走道", x: 450, y: 300, align: "center" }
       ]
     },
     {
@@ -422,8 +422,9 @@ window.CEREMONY_DATA = {
       ],
       mapId: "map_awards",
       positions: [
-        { roleId: "clean_up", label: "便當發放撤場", x: 780, y: 380, align: "right" }
+        { roleId: "clean_up", label: "便當發放撤場", zone: "📄 後方走廊＆登錄區", x: 780, y: 380, align: "right" }
       ]
     }
   ]
 };
+

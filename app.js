@@ -345,7 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const svgMapWrapper = document.getElementById("svg-map-wrapper");
   const currentMapTitle = document.getElementById("current-map-title");
   const currentMapDesc = document.getElementById("current-map-desc");
-  const clickDetailsCard = document.getElementById("map-click-details");
+  const zoneTableContainer = document.getElementById("map-zone-table-container");
   
   // 地圖選擇按鈕事件
   mapSelectBtns.forEach(btn => {
@@ -362,9 +362,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function renderActiveMap() {
-    // 隱藏細節面板
-    clickDetailsCard.style.display = "none";
-    
     // 更新標題與描述
     const mapConfig = data.maps[currentActiveMapId];
     currentMapTitle.textContent = mapConfig.name;
@@ -385,16 +382,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     svgMapWrapper.innerHTML = svgHtml;
 
-    // 註冊地圖中执事站點的點擊事件
+    // 渲染下方分區人員表格
+    renderZoneTable();
+
+    // 註冊地圖中執事站點的點擊事件
     const spots = svgMapWrapper.querySelectorAll(".svg-officer-spot");
     spots.forEach(spot => {
       spot.addEventListener("click", () => {
         const roleId = spot.getAttribute("data-role-id");
-        showRoleDetails(roleId);
-        
-        // 移除其他高亮，高亮此點
+        // 高亮地圖圓點
         spots.forEach(s => s.classList.remove("highlighted"));
         spot.classList.add("highlighted");
+        // 高亮下方表格對應列
+        highlightTableRow(roleId);
       });
     });
 
@@ -402,15 +402,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (activeHighlightRoleId) {
       const targetSpot = svgMapWrapper.querySelector(`.svg-officer-spot[data-role-id="${activeHighlightRoleId}"]`);
       if (targetSpot) {
-        // 先移除其他高亮
         spots.forEach(s => s.classList.remove("highlighted"));
         targetSpot.classList.add("highlighted");
-        
-        // 延遲滾動至地圖視區，並展開詳細說明
-        showRoleDetails(activeHighlightRoleId);
-        
-        // 讓地圖自動縮放滾動，確保能看見
-        targetSpot.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        highlightTableRow(activeHighlightRoleId);
+        setTimeout(() => {
+          targetSpot.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }, 100);
       }
     }
 
@@ -420,84 +417,530 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 顯示地圖中點擊角色的工作詳情
+  // 高亮表格中對應角色的列，並滾動至可見
+  function highlightTableRow(roleId) {
+    if (!zoneTableContainer) return;
+    // 移除其他高亮
+    zoneTableContainer.querySelectorAll(".zone-row").forEach(r => r.classList.remove("highlighted"));
+    const targetRow = zoneTableContainer.querySelector(`.zone-row[data-role-id="${roleId}"]`);
+    if (targetRow) {
+      targetRow.classList.add("highlighted");
+      setTimeout(() => {
+        targetRow.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }, 100);
+    }
+  }
+
+  // 渲染分區人員表格（依 zone 標籤分組）
+  function renderZoneTable() {
+    if (!zoneTableContainer) return;
+
+    const stageRoles = getRolesForMap(currentActiveMapId);
+
+    // 依 zone 標籤（position.label 的前綴）分組
+    // 使用 position.zone 欄位（若有）；否則以 position.label 作為分組 key
+    // 先建立區域組：以 zone 欄位 or label 分組
+    const zoneMap = new Map(); // zone key -> [{role, pos, stage}]
+    stageRoles.forEach(({ role, position, stage }) => {
+      if (!position) return;
+      const zoneKey = position.zone || position.label || "其他";
+      if (!zoneMap.has(zoneKey)) zoneMap.set(zoneKey, []);
+      zoneMap.get(zoneKey).push({ role, position, stage });
+    });
+
+    // 建立各 zone 的色彩索引（依序循環顏色）
+    const zoneColors = [
+      "#d4af37", // 金
+      "#5b9bd5", // 藍
+      "#70ad47", // 綠
+      "#ed7d31", // 橙
+      "#9b59b6", // 紫
+      "#e74c3c", // 紅
+      "#1abc9c", // 青
+      "#f39c12", // 黃橙
+      "#2980b9", // 深藍
+      "#27ae60", // 深綠
+      "#8e44ad", // 深紫
+      "#c0392b", // 深紅
+    ];
+    const zoneColorMap = new Map();
+    let colorIdx = 0;
+    zoneMap.forEach((_, key) => {
+      zoneColorMap.set(key, zoneColors[colorIdx % zoneColors.length]);
+      colorIdx++;
+    });
+
+    // 用同樣的顏色更新 SVG 圓點顏色
+    zoneMap.forEach((items, zoneKey) => {
+      const color = zoneColorMap.get(zoneKey);
+      items.forEach(({ role }) => {
+        const spot = svgMapWrapper.querySelector(`.svg-officer-spot[data-role-id="${role.id}"] .svg-officer-circle`);
+        if (spot) {
+          spot.style.fill = color;
+          spot.style.stroke = color;
+        }
+        // 也更新標籤文字顏色
+        const label = svgMapWrapper.querySelector(`.svg-officer-spot[data-role-id="${role.id}"] .svg-zone-label`);
+        if (label) label.style.fill = color;
+      });
+    });
+
+    // 生成 HTML
+    let html = "";
+    zoneMap.forEach((items, zoneKey) => {
+      const color = zoneColorMap.get(zoneKey);
+      html += `
+        <div class="zone-section">
+          <div class="zone-section-title" style="border-left: 4px solid ${color}; padding-left: 10px;">
+            <span class="zone-color-dot" style="background: ${color};"></span>
+            ${zoneKey}
+          </div>
+          <table class="zone-personnel-table">
+            <thead>
+              <tr>
+                <th>職掌</th>
+                <th>執事人員</th>
+                <th>工作說明</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      items.forEach(({ role, position, stage }) => {
+        const isUnassigned = !role.assignee || role.assignee === "XXX";
+        const assigneeDisplay = isUnassigned
+          ? `<span style="color: var(--text-muted); opacity: 0.6;">未指派</span>`
+          : `<span class="zone-assignee-name">${role.assignee}</span>`;
+        html += `
+          <tr class="zone-row" data-role-id="${role.id}"
+              title="點擊高亮地圖站點"
+              onclick="(function(el){
+                var roleId = el.getAttribute('data-role-id');
+                var spots = document.querySelectorAll('.svg-officer-spot');
+                spots.forEach(function(s){ s.classList.remove('highlighted'); });
+                var targetSpot = document.querySelector('.svg-officer-spot[data-role-id=\"'+roleId+'\"]');
+                if(targetSpot){ targetSpot.classList.add('highlighted'); targetSpot.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+                document.querySelectorAll('.zone-row').forEach(function(r){ r.classList.remove('highlighted'); });
+                el.classList.add('highlighted');
+              })(this)">
+            <td><strong>${role.title}</strong><br><span style="font-size:11px;color:var(--text-muted);">${stage.time} ${stage.title}</span></td>
+            <td>${assigneeDisplay}</td>
+            <td style="font-size: 13px; color: var(--text-secondary);">${role.desc.length > 60 ? role.desc.substring(0, 60) + '…' : role.desc}</td>
+          </tr>
+        `;
+      });
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+    });
+
+    if (html === "") {
+      html = `<div style="padding: 20px; text-align: center; color: var(--text-muted);">此地圖尚無執事站位資料。</div>`;
+    }
+
+    zoneTableContainer.innerHTML = html;
+  }
+
+  // 顯示地圖中點擊角色的工作詳情（現在改為高亮表格列）
+  // 保留此函數以相容從時間軸/搜尋跳轉而來的連結
   function showRoleDetails(roleId) {
-    let matchedRole = null;
-    let matchedStage = null;
-
-    // 遍歷 stages 尋找該角色
-    for (let stage of data.stages) {
-      for (let role of stage.roles) {
-        if (role.id === roleId) {
-          matchedRole = role;
-          matchedStage = stage;
-          break;
-        }
-      }
-      if (matchedRole) break;
-    }
-
-    if (matchedRole && matchedStage) {
-      document.getElementById("detail-role-title").textContent = matchedStage.title;
-      document.getElementById("detail-role-time").textContent = matchedStage.time;
-      document.getElementById("detail-role-name").textContent = matchedRole.title;
-      
-      // 將名字文字改為「即時可點選編輯」的下拉選單，讓使用者直接在地圖上編輯人名！
-      const assigneeContainer = document.getElementById("detail-role-assignee");
-      assigneeContainer.innerHTML = "";
-      
-      const select = document.createElement("select");
-      select.className = "map-assignee-select";
-      select.style.padding = "6px 12px";
-      select.style.fontSize = "16px";
-      select.style.fontWeight = "bold";
-      select.style.borderRadius = "8px";
-      select.style.border = "1.5px solid var(--border-color)";
-      select.style.background = "var(--bg-secondary)";
-      select.style.color = "var(--color-gold)";
-      select.style.cursor = "pointer";
-      select.style.outline = "none";
-      select.style.width = "100%";
-      select.style.maxWidth = "240px";
-
-      // 建立選項：確保當前指派人名即使不在 volunteerPool 中也能顯示在下拉選單裡
-      const currentAssignees = matchedRole.assignee.split(/[,、.\s]/).map(n => n.trim());
-      const combinedPool = Array.from(new Set([...volunteerPool, ...currentAssignees]));
-
-      let optionsHtml = `<option value="XXX" ${matchedRole.assignee === "XXX" ? "selected" : ""}>XXX (空缺)</option>`;
-      combinedPool.forEach(name => {
-        if (name && name !== "XXX") {
-          optionsHtml += `<option value="${name}" ${matchedRole.assignee === name ? "selected" : ""}>${name}</option>`;
-        }
-      });
-      select.innerHTML = optionsHtml;
-
-      // 綁定編輯變更事件
-      select.addEventListener("change", (e) => {
-        const newAssignee = e.target.value;
-        updateAssigneeInMemory(matchedStage.id, matchedRole.id, newAssignee);
-        
-        // 變更人名後，保持該點的高亮狀態！
-        setTimeout(() => {
-          const spots = svgMapWrapper.querySelectorAll(".svg-officer-spot");
-          spots.forEach(s => s.classList.remove("highlighted"));
-          const targetSpot = svgMapWrapper.querySelector(`.svg-officer-spot[data-role-id="${roleId}"]`);
-          if (targetSpot) {
-            targetSpot.classList.add("highlighted");
-          }
-        }, 100);
-      });
-
-      assigneeContainer.appendChild(select);
-      
-      document.getElementById("detail-role-desc").textContent = matchedRole.desc;
-      clickDetailsCard.style.display = "block";
-    }
+    highlightTableRow(roleId);
   }
 
   // 生成 地圖 A：結業頒證 SVG
   function generateAwardsMapSvg() {
     const stageRoles = getRolesForMap("map_awards");
+
+    // 渲染東單 1-4 組（右側）、西單 5-9 組（左側）
+    // 參考實際桌次位置圖：東單=右=1~4組，西單=左=5~9組
+    let chairsHtml = "";
+
+    // 東單 1-4 組（右側，x=560）
+    for (let i = 1; i <= 4; i++) {
+      const y = 175 + (i - 1) * 52;
+      chairsHtml += `
+        <rect class="svg-chair" x="555" y="${y}" width="90" height="28" rx="4" />
+        <text class="svg-chair-label" x="600" y="${y + 17}">第 ${i} 組</text>
+      `;
+    }
+
+    // 西單 5-9 組（左側，x=255）
+    for (let i = 5; i <= 9; i++) {
+      const y = 175 + (i - 5) * 52;
+      chairsHtml += `
+        <rect class="svg-chair" x="255" y="${y}" width="90" height="28" rx="4" />
+        <text class="svg-chair-label" x="300" y="${y + 17}">第 ${i} 組</text>
+      `;
+    }
+
+    // 生成執事站點 + 標籤框（模仿原圖的callout box風格）
+    // 每個執事：圓點 + 連線 + 標籤框（含職稱和人名）
+    let spotsHtml = "";
+    stageRoles.forEach(roleObj => {
+      const pos = roleObj.position;
+      if (!pos) return;
+      const isUnassigned = !roleObj.role.assignee || roleObj.role.assignee === "XXX";
+      const dotOpacity = isUnassigned ? "0.4" : "1";
+      const assignee = isUnassigned ? "（待指派）" : roleObj.role.assignee;
+      const label = pos.label;
+
+      // 標籤框位置：偏移避免遮住圓點，依 align 決定方向
+      const bw = 90; // 框寬
+      const bh = 34; // 框高
+      let bx, by, lx1, ly1, lx2, ly2;
+
+      if (pos.callout) {
+        // 使用 data.js 中自訂的 callout 偏移
+        bx = pos.x + pos.callout.dx - bw / 2;
+        by = pos.y + pos.callout.dy - bh / 2;
+      } else if (pos.align === "right") {
+        bx = pos.x - bw - 22;
+        by = pos.y - bh / 2;
+      } else if (pos.align === "left") {
+        bx = pos.x + 22;
+        by = pos.y - bh / 2;
+      } else {
+        // center: 上方或下方
+        bx = pos.x - bw / 2;
+        by = pos.y - bh - 22;
+      }
+
+      // 連線端點
+      lx1 = pos.x; ly1 = pos.y;
+      lx2 = bx + bw / 2; ly2 = by + bh;
+      if (pos.align === "right") { lx2 = bx + bw; ly2 = by + bh / 2; }
+      if (pos.align === "left") { lx2 = bx; ly2 = by + bh / 2; }
+
+      spotsHtml += `
+        <g class="svg-officer-spot" data-role-id="${roleObj.role.id}" style="cursor: pointer;">
+          <!-- 連線 -->
+          <line x1="${lx1}" y1="${ly1}" x2="${lx2}" y2="${ly2}"
+                stroke="var(--color-gold)" stroke-width="1.5" stroke-dasharray="3,2" opacity="${dotOpacity}" />
+          <!-- 圓點 -->
+          <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="13" style="opacity:${dotOpacity};" />
+          <text class="svg-officer-label" x="${pos.x}" y="${pos.y + 1}" style="font-size:10px;">執</text>
+          <!-- 標籤框 -->
+          <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="5"
+                fill="var(--bg-secondary)" stroke="var(--color-gold)" stroke-width="1.2"
+                opacity="${dotOpacity}" />
+          <text x="${bx + bw/2}" y="${by + 13}" class="svg-chair-label"
+                style="font-weight:700; font-size:11px; fill:var(--text-primary);">${label}</text>
+          <text x="${bx + bw/2}" y="${by + 27}" class="svg-chair-label"
+                style="font-size:10px; fill:var(--color-gold); font-weight:600;"
+                >${assignee.length > 10 ? assignee.substring(0,10)+"…" : assignee}</text>
+        </g>
+      `;
+    });
+
+    return `
+      <svg class="svg-element" viewBox="0 0 900 560" width="100%" height="100%">
+        <!-- 講堂背景外牆 -->
+        <rect class="svg-hall-bg" x="0" y="0" width="900" height="560" />
+        <rect class="svg-wall" x="60" y="30" width="780" height="500" rx="12" />
+
+        <!-- 側邊標示 -->
+        <text x="24" y="310" class="svg-chair-label"
+              style="transform: rotate(-90deg); transform-origin: 24px 310px; font-size:10px;">西單前門走廊</text>
+        <text x="876" y="310" class="svg-chair-label"
+              style="transform: rotate(90deg); transform-origin: 876px 310px; font-size:10px;">講堂後門走廊</text>
+
+        <!-- 佛龕 + 台上區（上方紅色台區） -->
+        <rect class="svg-stage" x="150" y="30" width="600" height="90" rx="4" />
+        <text x="450" y="58" class="svg-label-text" style="font-size:13px; fill:var(--color-gold);">佛 龕</text>
+
+        <!-- 住持講桌 -->
+        <rect class="svg-lectern" x="390" y="90" width="120" height="28" rx="4" fill="#8b0000" stroke="var(--color-gold)" stroke-width="1.5"/>
+        <text x="450" y="108" class="svg-officer-label" style="fill:white; font-size:10px;">住持講桌</text>
+
+        <!-- 大眾法師座位（左右各2位） -->
+        <rect class="svg-chair" x="270" y="92" width="22" height="22" rx="3" />
+        <text x="281" y="106" class="svg-chair-label" style="font-size:8px;">師</text>
+        <rect class="svg-chair" x="298" y="92" width="22" height="22" rx="3" />
+        <text x="309" y="106" class="svg-chair-label" style="font-size:8px;">師</text>
+        <rect class="svg-chair" x="326" y="92" width="22" height="22" rx="3" />
+        <text x="337" y="106" class="svg-chair-label" style="font-size:8px;">師</text>
+
+        <rect class="svg-chair" x="580" y="92" width="22" height="22" rx="3" />
+        <text x="591" y="106" class="svg-chair-label" style="font-size:8px;">師</text>
+        <rect class="svg-chair" x="608" y="92" width="22" height="22" rx="3" />
+        <text x="619" y="106" class="svg-chair-label" style="font-size:8px;">師</text>
+
+        <!-- 中央走道 -->
+        <line x1="450" y1="122" x2="450" y2="520"
+              stroke="var(--border-color)" stroke-dasharray="5,4" stroke-width="1.5" />
+        <text x="450" y="340" class="svg-label-text" style="font-size:12px; opacity:0.4;">中 央 走 道</text>
+
+        <!-- 東西單大標記 -->
+        <text x="300" y="350" class="svg-label-text" style="font-size:22px; opacity:0.1;">西 單</text>
+        <text x="576" y="350" class="svg-label-text" style="font-size:22px; opacity:0.1;">東 單</text>
+        <text x="300" y="380" class="svg-label-text" style="font-size:14px; opacity:0.18;">第 5～9 組</text>
+        <text x="580" y="380" class="svg-label-text" style="font-size:14px; opacity:0.18;">第 1～4 組</text>
+
+        <!-- 座椅區 -->
+        ${chairsHtml}
+
+        <!-- 執事站點 + 標籤 -->
+        ${spotsHtml}
+      </svg>
+    `;
+  }
+
+  // 生成 地圖 B：傳燈與發願 SVG
+  function generateLampsMapSvg() {
+    const stageRoles = getRolesForMap("map_lamps");
+
+    let baseHtml = "";
+
+    // 西單 5-9（左，x=255）座椅淡化
+    for (let i = 5; i <= 9; i++) {
+      const y = 175 + (i - 5) * 52;
+      baseHtml += `<rect class="svg-chair" x="255" y="${y}" width="90" height="28" rx="4" style="opacity:0.3;" />`;
+    }
+    // 東單 1-4（右，x=555）座椅淡化
+    for (let i = 1; i <= 4; i++) {
+      const y = 175 + (i - 1) * 52;
+      baseHtml += `<rect class="svg-chair" x="555" y="${y}" width="90" height="28" rx="4" style="opacity:0.3;" />`;
+    }
+
+    // 學員長佛前弧形排班
+    let choirHtml = "";
+    const arcPoints = [
+      { x: 275, y: 138 }, { x: 305, y: 140 }, { x: 335, y: 142 },
+      { x: 365, y: 143 }, { x: 395, y: 144 }, { x: 420, y: 145 },
+      { x: 480, y: 145 }, { x: 505, y: 144 }, { x: 535, y: 143 },
+      { x: 565, y: 142 }, { x: 595, y: 140 }, { x: 625, y: 138 }
+    ];
+    arcPoints.forEach(pt => {
+      choirHtml += `
+        <circle cx="${pt.x}" cy="${pt.y}" r="6" fill="var(--color-gold)" style="filter:drop-shadow(0 0 4px var(--color-gold));" />
+        <circle cx="${pt.x}" cy="${pt.y}" r="2" fill="white" />
+      `;
+    });
+
+    const arrowPath = `
+      <path d="M 450,145 L 450,500" fill="none" stroke="var(--color-gold)" stroke-width="2" stroke-dasharray="6,5" style="opacity:0.7;" />
+      <path d="M 350,145 L 350,125 L 450,125" fill="none" stroke="var(--color-gold)" stroke-width="1.5" stroke-dasharray="4,4" />
+      <path d="M 550,145 L 550,125 L 450,125" fill="none" stroke="var(--color-gold)" stroke-width="1.5" stroke-dasharray="4,4" />
+      <polygon points="450,505 444,495 456,495" fill="var(--color-gold)" />
+    `;
+
+    // 執事站點（標籤框式）
+    let spotsHtml = "";
+    stageRoles.forEach(roleObj => {
+      const pos = roleObj.position;
+      if (!pos) return;
+      const isUnassigned = !roleObj.role.assignee || roleObj.role.assignee === "XXX";
+      const dotOpacity = isUnassigned ? "0.4" : "1";
+      const assignee = isUnassigned ? "（待指派）" : roleObj.role.assignee;
+      const bw = 90, bh = 34;
+      let bx, by, lx2, ly2;
+      if (pos.align === "right") { bx = pos.x - bw - 20; by = pos.y - bh/2; lx2 = bx + bw; ly2 = by + bh/2; }
+      else if (pos.align === "left") { bx = pos.x + 20; by = pos.y - bh/2; lx2 = bx; ly2 = by + bh/2; }
+      else { bx = pos.x - bw/2; by = pos.y - bh - 20; lx2 = bx + bw/2; ly2 = by + bh; }
+
+      spotsHtml += `
+        <g class="svg-officer-spot" data-role-id="${roleObj.role.id}" style="cursor:pointer;">
+          <line x1="${pos.x}" y1="${pos.y}" x2="${lx2}" y2="${ly2}"
+                stroke="var(--color-gold)" stroke-width="1.5" stroke-dasharray="3,2" opacity="${dotOpacity}" />
+          <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="13" style="opacity:${dotOpacity};" />
+          <text class="svg-officer-label" x="${pos.x}" y="${pos.y+1}" style="font-size:10px;">執</text>
+          <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="5"
+                fill="var(--bg-secondary)" stroke="var(--color-gold)" stroke-width="1.2" opacity="${dotOpacity}" />
+          <text x="${bx+bw/2}" y="${by+13}" class="svg-chair-label"
+                style="font-weight:700; font-size:11px; fill:var(--text-primary);">${pos.label}</text>
+          <text x="${bx+bw/2}" y="${by+27}" class="svg-chair-label"
+                style="font-size:10px; fill:var(--color-gold); font-weight:600;"
+                >${assignee.length>10?assignee.substring(0,10)+"…":assignee}</text>
+        </g>
+      `;
+    });
+
+    return `
+      <svg class="svg-element" viewBox="0 0 900 560" width="100%" height="100%">
+        <rect class="svg-hall-bg" x="0" y="0" width="900" height="560" />
+        <rect class="svg-wall" x="60" y="30" width="780" height="500" rx="12" />
+
+        <text x="24" y="310" class="svg-chair-label"
+              style="transform:rotate(-90deg); transform-origin:24px 310px; font-size:10px;">西單前門走廊</text>
+        <text x="876" y="310" class="svg-chair-label"
+              style="transform:rotate(90deg); transform-origin:876px 310px; font-size:10px;">講堂後門走廊</text>
+
+        <rect class="svg-stage" x="150" y="30" width="600" height="90" rx="4" />
+        <text x="450" y="58" class="svg-label-text" style="font-size:13px; fill:var(--color-gold);">佛 龕</text>
+        <rect class="svg-lectern" x="390" y="90" width="120" height="28" rx="4" fill="#8b0000" stroke="var(--color-gold)" stroke-width="1.5"/>
+        <text x="450" y="108" class="svg-officer-label" style="fill:white; font-size:10px;">住持講桌</text>
+
+        <!-- 學員長佛前捧燈排班 -->
+        ${choirHtml}
+        <text x="450" y="165" class="svg-chair-label" style="font-size:9px; fill:var(--color-gold);">─ 學員長捧燈佛前排班（中留空位）─</text>
+
+        <!-- 中央走道傳燈動線 -->
+        ${arrowPath}
+        <text x="450" y="350" class="svg-label-text" style="font-size:11px; opacity:0.35;">中 央 走 道</text>
+
+        <text x="300" y="340" class="svg-label-text" style="font-size:18px; opacity:0.1;">西 單</text>
+        <text x="576" y="340" class="svg-label-text" style="font-size:18px; opacity:0.1;">東 單</text>
+
+        ${baseHtml}
+        ${spotsHtml}
+      </svg>
+    `;
+  }
+
+  // 生成 地圖 C：禪堂供燈供僧 SVG（直式，仿原 Word 圖比例）
+  function generateOfferingMapSvg() {
+    const stageRoles = getRolesForMap("map_offering");
+
+    // 摩尼寶珠燈板（12列×12行共144盞，排列在佛龕前方）
+    let maniLampsHtml = "";
+    for (let row = 0; row < 12; row++) {
+      for (let col = 0; col < 12; col++) {
+        const cx = 155 + col * 35;
+        const cy = 330 + row * 35;
+        maniLampsHtml += `<circle cx="${cx}" cy="${cy}" r="10"
+          fill="rgba(212,175,55,0.08)" stroke="var(--color-gold)" stroke-width="0.5"
+          style="opacity:0.5;" />`;
+      }
+    }
+
+    // 水晶紅包盤（東西兩側各1個）
+    const platesHtml = `
+      <ellipse cx="95"  cy="265" rx="28" ry="18" fill="rgba(176,224,230,0.15)" stroke="#87ceeb" stroke-width="1.5" />
+      <text x="95"  y="269" class="svg-chair-label" style="font-size:9px; fill:#87ceeb;">水晶盤(西)</text>
+      <ellipse cx="505" cy="265" rx="28" ry="18" fill="rgba(176,224,230,0.15)" stroke="#87ceeb" stroke-width="1.5" />
+      <text x="505" y="269" class="svg-chair-label" style="font-size:9px; fill:#87ceeb;">水晶盤(東)</text>
+    `;
+
+    // 圓柱（前後各2根）
+    const pillarsHtml = `
+      <circle cx="95"  cy="310" r="12" fill="var(--bg-tertiary)" stroke="var(--border-color)" stroke-width="1.5" />
+      <text x="95"  y="314" class="svg-chair-label" style="font-size:8px;">柱</text>
+      <circle cx="505" cy="310" r="12" fill="var(--bg-tertiary)" stroke="var(--border-color)" stroke-width="1.5" />
+      <text x="505" y="314" class="svg-chair-label" style="font-size:8px;">柱</text>
+      <circle cx="95"  cy="735" r="12" fill="var(--bg-tertiary)" stroke="var(--border-color)" stroke-width="1.5" />
+      <text x="95"  y="739" class="svg-chair-label" style="font-size:8px;">柱</text>
+      <circle cx="505" cy="735" r="12" fill="var(--bg-tertiary)" stroke="var(--border-color)" stroke-width="1.5" />
+      <text x="505" y="739" class="svg-chair-label" style="font-size:8px;">柱</text>
+    `;
+
+    // 供奉動線（O型環）
+    const flowPath = `
+      <path d="M 490,770 L 490,310 A 195,195 0 0,0 110,310 L 110,770"
+            fill="none" stroke="var(--color-gold)" stroke-width="2" stroke-dasharray="4,4" opacity="0.6"/>
+      <polygon points="490,500 484,490 496,490" fill="var(--color-gold)" style="transform:rotate(180deg); transform-origin:490px 500px;" />
+      <polygon points="110,600 104,590 116,590" fill="var(--color-gold)" />
+    `;
+
+    // 執事站點（標籤框式）
+    let spotsHtml = "";
+    // 重新定義供燈地圖的positions座標（直式佈局，viewBox 600×900）
+    // 直式佈局中的位置重新對應
+    const offeringPositions = {
+      "off_pull_hall":      { x: 300, y: 870, align: "center" },
+      "off_pull_out":       { x: 300, y: 790, align: "center" },
+      "off_cut_east":       { x: 480, y: 580, align: "left"   },
+      "off_cut_west":       { x: 120, y: 580, align: "right"  },
+      "off_guide_east_post":{ x: 480, y: 700, align: "left"   },
+      "off_guide_west_post":{ x: 120, y: 700, align: "right"  },
+      "off_demo_east":      { x: 450, y: 390, align: "left"   },
+      "off_demo_west":      { x: 150, y: 390, align: "right"  },
+      "off_refill_lamp":    { x: 300, y: 490, align: "center" },
+      "off_collect_redbag": { x: 450, y: 275, align: "left"   },
+      "off_control_light":  { x: 35,  y: 780, align: "left"   },
+      "off_chairs":         { x: 35,  y: 200, align: "left"   },
+      "off_card_hold":      { x: 300, y: 540, align: "center" },
+    };
+
+    stageRoles.forEach(roleObj => {
+      const pos = offeringPositions[roleObj.role.id];
+      if (!pos) return;
+      const isUnassigned = !roleObj.role.assignee || roleObj.role.assignee === "XXX";
+      const dotOpacity = isUnassigned ? "0.4" : "1";
+      const assignee = isUnassigned ? "（待指派）" : roleObj.role.assignee;
+      const label = roleObj.position ? roleObj.position.label : roleObj.role.title.substring(0,6);
+      const bw = 88, bh = 34;
+      let bx, by, lx2, ly2;
+      if (pos.align === "right") { bx = pos.x - bw - 16; by = pos.y - bh/2; lx2 = bx + bw; ly2 = by + bh/2; }
+      else if (pos.align === "left") { bx = pos.x + 16; by = pos.y - bh/2; lx2 = bx; ly2 = by + bh/2; }
+      else { bx = pos.x - bw/2; by = pos.y - bh - 16; lx2 = bx + bw/2; ly2 = by + bh; }
+
+      spotsHtml += `
+        <g class="svg-officer-spot" data-role-id="${roleObj.role.id}" style="cursor:pointer;">
+          <line x1="${pos.x}" y1="${pos.y}" x2="${lx2}" y2="${ly2}"
+                stroke="var(--color-gold)" stroke-width="1.5" stroke-dasharray="3,2" opacity="${dotOpacity}" />
+          <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="13" style="opacity:${dotOpacity};" />
+          <text class="svg-officer-label" x="${pos.x}" y="${pos.y+1}" style="font-size:10px;">執</text>
+          <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="5"
+                fill="var(--bg-secondary)" stroke="var(--color-gold)" stroke-width="1.2" opacity="${dotOpacity}" />
+          <text x="${bx+bw/2}" y="${by+13}" class="svg-chair-label"
+                style="font-weight:700; font-size:11px; fill:var(--text-primary);">${label}</text>
+          <text x="${bx+bw/2}" y="${by+27}" class="svg-chair-label"
+                style="font-size:10px; fill:var(--color-gold); font-weight:600;"
+                >${assignee.length>10?assignee.substring(0,10)+"…":assignee}</text>
+        </g>
+      `;
+    });
+
+    // viewBox 使用 600×920（直式，仿 Word 圖比例）
+    return `
+      <svg class="svg-element" viewBox="0 0 600 920" width="100%" height="100%">
+        <!-- 禪堂牆體 -->
+        <rect class="svg-hall-bg" x="0" y="0" width="600" height="920" />
+        <rect class="svg-wall" x="40" y="30" width="520" height="860" rx="12" />
+
+        <!-- 大門入口（下方） -->
+        <rect x="220" y="870" width="160" height="18" rx="4" fill="var(--bg-tertiary)" stroke="var(--border-color)" stroke-width="1" />
+        <text x="300" y="883" class="svg-chair-label" style="font-size:11px;">禪堂大門入口</text>
+
+        <!-- 佛龕（上方） -->
+        <rect class="svg-stage" x="100" y="30" width="400" height="80" rx="4" />
+        <text x="300" y="60" class="svg-label-text" style="font-size:15px; fill:var(--color-gold); font-weight:bold;">大雄寶殿 佛龕</text>
+
+        <!-- 住持座椅（獅子座） -->
+        <rect class="svg-lectern" x="265" y="118" width="70" height="40" rx="4"
+              fill="#8b0000" stroke="var(--color-gold)" stroke-width="1.5"/>
+        <text x="300" y="142" class="svg-officer-label" style="fill:white; font-size:10px;">住持座</text>
+
+        <!-- 大眾法師座位 -->
+        <rect class="svg-chair" x="170" y="120" width="26" height="26" rx="3" />
+        <text x="183" y="136" class="svg-chair-label" style="font-size:8px;">師</text>
+        <rect class="svg-chair" x="202" y="120" width="26" height="26" rx="3" />
+        <text x="215" y="136" class="svg-chair-label" style="font-size:8px;">師</text>
+        <rect class="svg-chair" x="234" y="120" width="26" height="26" rx="3" />
+        <text x="247" y="136" class="svg-chair-label" style="font-size:8px;">師</text>
+        <rect class="svg-chair" x="340" y="120" width="26" height="26" rx="3" />
+        <text x="353" y="136" class="svg-chair-label" style="font-size:8px;">師</text>
+        <rect class="svg-chair" x="372" y="120" width="26" height="26" rx="3" />
+        <text x="385" y="136" class="svg-chair-label" style="font-size:8px;">師</text>
+
+        <!-- 水晶紅包盤 -->
+        ${platesHtml}
+
+        <!-- 摩尼寶珠燈板 -->
+        ${maniLampsHtml}
+        <text x="300" y="752" class="svg-chair-label"
+              style="fill:var(--color-gold); font-weight:bold; font-size:11px;">摩尼寶珠燈板 (144盞心燈)</text>
+
+        <!-- 圓柱 -->
+        ${pillarsHtml}
+
+        <!-- 供奉動線 -->
+        ${flowPath}
+        <text x="490" y="540" class="svg-chair-label"
+              style="fill:var(--color-gold); font-weight:bold; font-size:9px;
+                     transform:rotate(90deg); transform-origin:490px 540px;">東單進場↓</text>
+        <text x="110" y="540" class="svg-chair-label"
+              style="fill:var(--color-gold); font-weight:bold; font-size:9px;
+                     transform:rotate(-90deg); transform-origin:110px 540px;">西單歸位↑</text>
+
+        <!-- 執事站位 -->
+        ${spotsHtml}
+      </svg>
+    `;
+  }
+
+
     
     // 渲染西單 1-6 組、東單 7-12 組座椅
     let chairsHtml = "";
@@ -520,23 +963,18 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
     }
 
-    // 生成執事站點 (根據 positions 定位)
+    // 生成執事站點 (精簡版：只顯示圓點＋簡短區域標籤，人名移至下方表格)
     let spotsHtml = "";
     stageRoles.forEach(roleObj => {
       const pos = roleObj.position;
       if (pos) {
-        const assigneeName = roleObj.role.assignee || "XXX";
-        const isUnassigned = assigneeName === "XXX";
-        const assigneeStyle = isUnassigned 
-          ? "fill: var(--text-muted); font-size: 13px; font-weight: normal; opacity: 0.5;" 
-          : "fill: var(--text-primary); font-weight: bold; font-size: 14px;";
-
+        const isUnassigned = !roleObj.role.assignee || roleObj.role.assignee === "XXX";
+        const dotOpacity = isUnassigned ? "0.35" : "1";
         spotsHtml += `
-          <g class="svg-officer-spot" data-role-id="${roleObj.role.id}">
-            <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="14" />
-            <text class="svg-officer-label" x="${pos.x}" y="${pos.y}">執</text>
-            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 27}" style="fill: var(--color-gold); font-weight: bold;">${pos.label}</text>
-            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 44}" style="${assigneeStyle}">${assigneeName}</text>
+          <g class="svg-officer-spot" data-role-id="${roleObj.role.id}" style="cursor: pointer;">
+            <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="16" style="opacity: ${dotOpacity};" />
+            <text class="svg-officer-label" x="${pos.x}" y="${pos.y + 1}">執</text>
+            <text class="svg-zone-label svg-chair-label" x="${pos.x}" y="${pos.y + 30}" style="fill: var(--color-gold); font-weight: bold; font-size: 11px;">${pos.label}</text>
           </g>
         `;
       }
@@ -636,18 +1074,13 @@ document.addEventListener("DOMContentLoaded", () => {
     stageRoles.forEach(roleObj => {
       const pos = roleObj.position;
       if (pos) {
-        const assigneeName = roleObj.role.assignee || "XXX";
-        const isUnassigned = assigneeName === "XXX";
-        const assigneeStyle = isUnassigned 
-          ? "fill: var(--text-muted); font-size: 13px; font-weight: normal; opacity: 0.5;" 
-          : "fill: var(--text-primary); font-weight: bold; font-size: 14px;";
-
+        const isUnassigned = !roleObj.role.assignee || roleObj.role.assignee === "XXX";
+        const dotOpacity = isUnassigned ? "0.35" : "1";
         spotsHtml += `
-          <g class="svg-officer-spot" data-role-id="${roleObj.role.id}">
-            <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="14" />
-            <text class="svg-officer-label" x="${pos.x}" y="${pos.y}">執</text>
-            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 27}" style="fill: var(--color-gold); font-weight: bold;">${pos.label}</text>
-            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 44}" style="${assigneeStyle}">${assigneeName}</text>
+          <g class="svg-officer-spot" data-role-id="${roleObj.role.id}" style="cursor: pointer;">
+            <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="16" style="opacity: ${dotOpacity};" />
+            <text class="svg-officer-label" x="${pos.x}" y="${pos.y + 1}">執</text>
+            <text class="svg-zone-label svg-chair-label" x="${pos.x}" y="${pos.y + 30}" style="fill: var(--color-gold); font-weight: bold; font-size: 11px;">${pos.label}</text>
           </g>
         `;
       }
@@ -761,18 +1194,13 @@ document.addEventListener("DOMContentLoaded", () => {
     stageRoles.forEach(roleObj => {
       const pos = roleObj.position;
       if (pos) {
-        const assigneeName = roleObj.role.assignee || "XXX";
-        const isUnassigned = assigneeName === "XXX";
-        const assigneeStyle = isUnassigned 
-          ? "fill: var(--text-muted); font-size: 13px; font-weight: normal; opacity: 0.5;" 
-          : "fill: var(--text-primary); font-weight: bold; font-size: 14px;";
-
+        const isUnassigned = !roleObj.role.assignee || roleObj.role.assignee === "XXX";
+        const dotOpacity = isUnassigned ? "0.35" : "1";
         spotsHtml += `
-          <g class="svg-officer-spot" data-role-id="${roleObj.role.id}">
-            <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="14" />
-            <text class="svg-officer-label" x="${pos.x}" y="${pos.y}">執</text>
-            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 27}" style="fill: var(--color-gold); font-weight: bold;">${pos.label}</text>
-            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 44}" style="${assigneeStyle}">${assigneeName}</text>
+          <g class="svg-officer-spot" data-role-id="${roleObj.role.id}" style="cursor: pointer;">
+            <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="16" style="opacity: ${dotOpacity};" />
+            <text class="svg-officer-label" x="${pos.x}" y="${pos.y + 1}">執</text>
+            <text class="svg-zone-label svg-chair-label" x="${pos.x}" y="${pos.y + 30}" style="fill: var(--color-gold); font-weight: bold; font-size: 11px;">${pos.label}</text>
           </g>
         `;
       }
@@ -1145,7 +1573,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const statusGlow = document.createElement("div");
     statusGlow.className = "sync-status-glow";
-    statusGlow.innerHTML = `<span>⏳ 正在同步飛書雲端...</span>`;
+    statusGlow.innerHTML = `<span>⏳ 正在同步雲端班表...</span>`;
     document.body.appendChild(statusGlow);
 
     fetch('/api/update-data', {
@@ -1162,10 +1590,10 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(result => {
       if (result.code === 0) {
         statusGlow.className = "sync-status-glow success";
-        statusGlow.innerHTML = `<span>✅ 飛書同步成功！</span>`;
+        statusGlow.innerHTML = `<span>✅ 雲端同步成功！</span>`;
       } else {
         statusGlow.className = "sync-status-glow error";
-        statusGlow.innerHTML = `<span>❌ 飛書同步失敗: ${result.msg}</span>`;
+        statusGlow.innerHTML = `<span>❌ 雲端同步失敗: ${result.msg}</span>`;
       }
       setTimeout(() => {
         statusGlow.style.opacity = 0;
@@ -1174,7 +1602,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .catch(err => {
       statusGlow.className = "sync-status-glow error";
-      statusGlow.innerHTML = `<span>⚠️ 飛書離線 (僅儲存於網頁)</span>`;
+      statusGlow.innerHTML = `<span>⚠️ 離線模式 (僅儲存於網頁)</span>`;
       setTimeout(() => {
         statusGlow.style.opacity = 0;
         setTimeout(() => statusGlow.remove(), 400);
@@ -1246,7 +1674,7 @@ window.CEREMONY_DATA = ${dataString};
 
       statusGlow = document.createElement("div");
       statusGlow.className = "sync-status-glow";
-      statusGlow.innerHTML = `<span>⏳ 正在同步飛書雲端...</span>`;
+      statusGlow.innerHTML = `<span>⏳ 正在同步雲端班表...</span>`;
       document.body.appendChild(statusGlow);
     }
 
@@ -1286,7 +1714,7 @@ window.CEREMONY_DATA = ${dataString};
 
         if (showToast && statusGlow) {
           statusGlow.className = "sync-status-glow success";
-          statusGlow.innerHTML = `<span>✅ 飛書雲端班表同步成功！</span>`;
+          statusGlow.innerHTML = `<span>✅ 雲端班表同步成功！</span>`;
           setTimeout(() => {
             statusGlow.style.opacity = 0;
             setTimeout(() => statusGlow.remove(), 400);
@@ -1299,7 +1727,7 @@ window.CEREMONY_DATA = ${dataString};
       console.log("ℹ️ [Offline/Fallback] 無法從 API 取得即時數據，採用本地/現有班表：", e.message);
       if (showToast && statusGlow) {
         statusGlow.className = "sync-status-glow error";
-        statusGlow.innerHTML = `<span>❌ 同步失敗: ${e.message}</span>`;
+        statusGlow.innerHTML = `<span>❌ 雲端同步失敗</span>`;
         setTimeout(() => {
           statusGlow.style.opacity = 0;
           setTimeout(() => statusGlow.remove(), 400);

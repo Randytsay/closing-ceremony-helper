@@ -1599,3 +1599,172 @@ body {
   color: #c62828;
 }
 
+/* ============================================================
+   地圖 v2：地圖 + 分區人員表格 聯動佈局
+   ============================================================ */
+.map-v2-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.map-card-compact {
+  /* 地圖卡片維持原寬，高度緊湊一點 */
+}
+
+/* 分區人員表格包裝區 */
+.map-zone-table-wrapper {
+  background: var(--bg-glass);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.map-zone-table-header {
+  margin-bottom: 20px;
+}
+
+.map-zone-table-header h3 {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.map-zone-table-header p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* 每個分區的容器 */
+.zone-section {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.zone-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  padding: 10px 16px;
+  background: var(--bg-secondary);
+  letter-spacing: 0.02em;
+}
+
+.zone-color-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* 分區人員表格 */
+.zone-personnel-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.zone-personnel-table thead th {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 8px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.zone-personnel-table thead th:first-child { min-width: 160px; }
+.zone-personnel-table thead th:nth-child(2) { min-width: 140px; }
+.zone-personnel-table thead th:last-child { min-width: 180px; }
+
+/* 每一列 */
+.zone-row {
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.zone-row:last-child {
+  border-bottom: none;
+}
+
+.zone-row td {
+  padding: 12px 14px;
+  vertical-align: top;
+  color: var(--text-primary);
+}
+
+.zone-row:hover {
+  background: rgba(212, 175, 55, 0.06);
+  transform: translateX(3px);
+}
+
+/* 高亮狀態（點擊地圖圓點時） */
+.zone-row.highlighted {
+  background: rgba(212, 175, 55, 0.15) !important;
+  border-left: 3px solid var(--color-gold);
+  animation: rowPulse 0.5s ease;
+}
+
+@keyframes rowPulse {
+  0%   { background: rgba(212, 175, 55, 0.35); }
+  100% { background: rgba(212, 175, 55, 0.15); }
+}
+
+/* 執事人員名字標籤 */
+.zone-assignee-name {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-gold);
+  background: rgba(212, 175, 55, 0.1);
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  line-height: 1.6;
+}
+
+/* SVG 地圖圓點高亮樣式強化 */
+.svg-officer-spot .svg-officer-circle {
+  transition: r 0.2s ease, filter 0.2s ease;
+}
+
+.svg-officer-spot:hover .svg-officer-circle,
+.svg-officer-spot.highlighted .svg-officer-circle {
+  filter: drop-shadow(0 0 8px currentColor) brightness(1.3);
+}
+
+.svg-officer-spot.highlighted .svg-officer-circle {
+  animation: dotPulse 0.8s ease infinite alternate;
+}
+
+@keyframes dotPulse {
+  from { filter: drop-shadow(0 0 6px currentColor); }
+  to   { filter: drop-shadow(0 0 16px currentColor) brightness(1.4); }
+}
+
+/* 深色模式調整 */
+[data-theme="dark"] .zone-section {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .zone-section-title {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .zone-row.highlighted {
+  background: rgba(212, 175, 55, 0.12) !important;
+}
