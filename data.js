@@ -431,17 +431,17 @@ window.CEREMONY_DATA = {
       title: "17. 撤場與騎牛歸家",
       time: "繼上",
       duration: "20'",
-      desc: "整理講堂與禪堂場地，收拾物品，分發便當/回點，歡喜騎牛歸家。",
+      desc: "整理講堂與禪堂場地，收拾物品，回點，歡喜騎牛歸家。",
       notes: [
         "撤除場地佈置、清理垃圾、歸位講堂與禪堂桌椅。",
-        "發發放便當、回點。"
+        "撤場、回點。"
       ],
       roles: [
-        { id: "clean_up", title: "撤場與便當分發", assignee: "全體義工團隊", desc: "協助講堂與禪堂的撤場復原工作，並分發學員及義工便當、回點。" }
+        { id: "clean_up", title: "撤場與回點", assignee: "全體義工團隊", desc: "協助講堂與禪堂的撤場復原工作，並回點。" }
       ],
       mapId: "map_awards",
       positions: [
-        { roleId: "clean_up", label: "便當發放撤場", zone: "📄 後方走廊＆登錄區", x: 780, y: 380, align: "right" }
+        { roleId: "clean_up", label: "撤場與回點", zone: "📄 後方走廊＆登錄區", x: 780, y: 380, align: "right" }
       ]
     }
   ]
