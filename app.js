@@ -469,9 +469,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (pos) {
         spotsHtml += `
           <g class="svg-officer-spot" data-role-id="${roleObj.role.id}">
-            <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="11" />
+            <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="14" />
             <text class="svg-officer-label" x="${pos.x}" y="${pos.y}">執</text>
-            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 24}" style="fill: var(--color-gold); font-weight: 500;">${pos.label}</text>
+            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 27}" style="fill: var(--color-gold); font-weight: bold;">${pos.label}</text>
           </g>
         `;
       }
@@ -573,9 +573,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (pos) {
         spotsHtml += `
           <g class="svg-officer-spot" data-role-id="${roleObj.role.id}">
-            <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="11" />
+            <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="14" />
             <text class="svg-officer-label" x="${pos.x}" y="${pos.y}">執</text>
-            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 24}" style="fill: var(--color-gold); font-weight: 500;">${pos.label}</text>
+            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 27}" style="fill: var(--color-gold); font-weight: bold;">${pos.label}</text>
           </g>
         `;
       }
@@ -691,9 +691,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (pos) {
         spotsHtml += `
           <g class="svg-officer-spot" data-role-id="${roleObj.role.id}">
-            <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="11" />
+            <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="14" />
             <text class="svg-officer-label" x="${pos.x}" y="${pos.y}">執</text>
-            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 24}" style="fill: var(--color-gold); font-weight: 500;">${pos.label}</text>
+            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 27}" style="fill: var(--color-gold); font-weight: bold;">${pos.label}</text>
           </g>
         `;
       }
@@ -793,6 +793,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 初始化 Admin 模組
   function initAdminModule() {
+    if (!volunteerPoolInput || !editorStagesContainer) return;
     // 1. 初始化名單庫文字
     volunteerPoolInput.value = volunteerPool.join("\n");
     
@@ -839,6 +840,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 渲染右側執事排班表編輯清單
   function renderEditorList() {
+    if (!editorStagesContainer) return;
     editorStagesContainer.innerHTML = "";
 
     data.stages.forEach(stage => {

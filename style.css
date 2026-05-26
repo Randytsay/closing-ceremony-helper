@@ -11,7 +11,37 @@
   --hue-gold: 43;
   --hue-green: 154;
   
-  /* 深色模式變數 (預設) */
+  /* 淺色模式變數 (優雅沙色 - 預設) */
+  --bg-primary: #FAF8F5;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F2EFE9;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --border-color: rgba(184, 134, 11, 0.18);
+  --border-focus: rgba(184, 134, 11, 0.45);
+  
+  --text-primary: #2C2A29;
+  --text-secondary: #5C5854;
+  --text-muted: #8C8680;
+  
+  --color-gold: hsl(var(--hue-gold), 70%, 40%);
+  --color-gold-hover: hsl(var(--hue-gold), 80%, 35%);
+  --color-gold-glow: rgba(184, 134, 11, 0.2);
+  
+  --color-green: hsl(var(--hue-green), 28%, 15%);
+  --color-green-light: hsl(var(--hue-green), 20%, 35%);
+  
+  --shadow-sm: 0 2px 8px rgba(44, 42, 41, 0.08);
+  --shadow-md: 0 8px 24px rgba(44, 42, 41, 0.1);
+  --shadow-lg: 0 16px 48px rgba(44, 42, 41, 0.15);
+  --shadow-gold: 0 0 15px rgba(184, 134, 11, 0.15);
+  
+  --glass-blur: blur(8px);
+  --font-serif: 'Noto Serif TC', serif;
+  --font-sans: 'Outfit', 'Inter', -apple-system, sans-serif;
+}
+
+[data-theme="dark"] {
+  /* 深色模式變數 (深色禪意) */
   --bg-primary: #121212;
   --bg-secondary: #1a1a1a;
   --bg-tertiary: #242424;
@@ -36,36 +66,6 @@
   --shadow-gold: 0 0 20px rgba(212, 175, 55, 0.25);
   
   --glass-blur: blur(12px);
-  --font-serif: 'Noto Serif TC', serif;
-  --font-sans: 'Outfit', 'Inter', -apple-system, sans-serif;
-}
-
-[data-theme="light"] {
-  /* 淺色模式變數 (優雅沙色) */
-  --bg-primary: #FAF8F5;
-  --bg-secondary: #FFFFFF;
-  --bg-tertiary: #F2EFE9;
-  --bg-glass: rgba(255, 255, 255, 0.8);
-  --border-color: rgba(184, 134, 11, 0.15);
-  --border-focus: rgba(184, 134, 11, 0.4);
-  
-  --text-primary: #2C2A29;
-  --text-secondary: #5C5854;
-  --text-muted: #8C8680;
-  
-  --color-gold: hsl(var(--hue-gold), 70%, 40%);
-  --color-gold-hover: hsl(var(--hue-gold), 80%, 35%);
-  --color-gold-glow: rgba(184, 134, 11, 0.2);
-  
-  --color-green: hsl(var(--hue-green), 28%, 15%);
-  --color-green-light: hsl(var(--hue-green), 20%, 35%);
-  
-  --shadow-sm: 0 2px 8px rgba(44, 42, 41, 0.08);
-  --shadow-md: 0 8px 24px rgba(44, 42, 41, 0.1);
-  --shadow-lg: 0 16px 48px rgba(44, 42, 41, 0.15);
-  --shadow-gold: 0 0 15px rgba(184, 134, 11, 0.15);
-  
-  --glass-blur: blur(8px);
 }
 
 /* --------------------------------------------------------------------------
@@ -82,8 +82,8 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 20px;
+  line-height: 1.8;
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
@@ -206,7 +206,7 @@ body {
    -------------------------------------------------------------------------- */
 .nav-tabs {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   background: var(--bg-glass);
   backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border-color);
@@ -224,7 +224,7 @@ body {
   padding: 12px 8px;
   border-radius: 12px;
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 500;
   display: flex;
   flex-direction: column;
@@ -349,7 +349,7 @@ body {
 
 .timeline-time {
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--color-gold);
   background: rgba(212, 175, 55, 0.1);
@@ -360,12 +360,12 @@ body {
 
 .timeline-card-header h3 {
   font-family: var(--font-serif);
-  font-size: 18px;
+  font-size: 23px;
   font-weight: 600;
 }
 
 .timeline-duration {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--text-muted);
   border: 1px solid var(--border-color);
   padding: 2px 6px;
@@ -373,7 +373,7 @@ body {
 }
 
 .timeline-arrow {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   transform: rotate(0deg);
 }
@@ -396,7 +396,7 @@ body {
 }
 
 .timeline-desc {
-  font-size: 15px;
+  font-size: 19px;
   color: var(--text-primary);
   margin-bottom: 12px;
 }
@@ -411,7 +411,7 @@ body {
 }
 
 .timeline-notes-box h5 {
-  font-size: 13px;
+  font-size: 17px;
   color: var(--color-gold);
   margin-bottom: 6px;
   letter-spacing: 1px;
@@ -422,7 +422,7 @@ body {
 }
 
 .timeline-notes-box li {
-  font-size: 14px;
+  font-size: 18px;
   color: var(--text-secondary);
   position: relative;
   padding-left: 14px;
@@ -438,7 +438,7 @@ body {
 
 /* 執事名單表格 */
 .timeline-duties-box h5 {
-  font-size: 13px;
+  font-size: 17px;
   color: var(--text-muted);
   margin-bottom: 8px;
   letter-spacing: 1px;
@@ -447,19 +447,19 @@ body {
 .duties-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 19px;
 }
 
 .duties-table th,
 .duties-table td {
-  padding: 10px 12px;
+  padding: 12px 14px;
   text-align: left;
   border-bottom: 1px solid var(--border-color);
 }
 
 .duties-table th {
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 600;
   background: rgba(212, 175, 55, 0.02);
 }
 
@@ -470,10 +470,11 @@ body {
 .highlight-name {
   color: var(--color-gold);
   background: rgba(212, 175, 55, 0.08);
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
+  display: inline-block;
 }
 
 .highlight-name:hover {
@@ -485,10 +486,11 @@ body {
   background: transparent;
   border: 1px solid var(--color-gold);
   color: var(--color-gold);
-  font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 4px;
+  font-size: 15px;
+  padding: 4px 10px;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: 500;
 }
 
 .btn-locate:hover {
@@ -794,8 +796,8 @@ body {
 .svg-stage { fill: rgba(30, 54, 45, 0.4); stroke: var(--border-color); stroke-width: 2; }
 .svg-lectern { fill: linear-gradient(to bottom, #d4af37, #b8860b); stroke: #d4af37; stroke-width: 1; }
 .svg-chair { fill: var(--bg-secondary); stroke: var(--border-color); stroke-width: 1; }
-.svg-chair-label { font-size: 9px; fill: var(--text-muted); text-anchor: middle; font-family: var(--font-sans); }
-.svg-label-text { font-family: var(--font-serif); font-size: 14px; fill: var(--text-muted); opacity: 0.6; text-anchor: middle; }
+.svg-chair-label { font-size: 13px; fill: var(--text-muted); text-anchor: middle; font-family: var(--font-sans); font-weight: 500; }
+.svg-label-text { font-family: var(--font-serif); font-size: 18px; fill: var(--text-muted); opacity: 0.6; text-anchor: middle; }
 
 /* 執事站點樣式 */
 .svg-officer-spot {
@@ -817,7 +819,7 @@ body {
 }
 
 .svg-officer-label {
-  font-size: 9px;
+  font-size: 12px;
   font-weight: bold;
   fill: var(--text-primary);
   text-anchor: middle;
@@ -833,9 +835,9 @@ body {
 
 /* 站位閃爍動畫 (高亮時) */
 @keyframes pulse-spot {
-  0% { r: 10; stroke-width: 2.5; opacity: 1; }
-  50% { r: 16; stroke-width: 4; stroke: var(--color-gold); opacity: 0.8; }
-  100% { r: 10; stroke-width: 2.5; opacity: 1; }
+  0% { r: 14; stroke-width: 2.5; opacity: 1; }
+  50% { r: 20; stroke-width: 4; stroke: var(--color-gold); opacity: 0.8; }
+  100% { r: 14; stroke-width: 2.5; opacity: 1; }
 }
 
 .svg-officer-spot.highlighted .svg-officer-circle {
@@ -1352,7 +1354,7 @@ body {
 
 @media (max-width: 600px) {
   body {
-    font-size: 15px;
+    font-size: 19px;
   }
   
   .app-container {
@@ -1364,7 +1366,7 @@ body {
   }
   
   .header-text .main-title {
-    font-size: 20px;
+    font-size: 22px;
   }
   
   .nav-tabs {
@@ -1373,17 +1375,17 @@ body {
   }
   
   .nav-tab {
-    padding: 8px 4px;
-    font-size: 12px;
+    padding: 10px 4px;
+    font-size: 16px;
     gap: 2px;
   }
   
   .nav-tab .tab-icon {
-    font-size: 16px;
+    font-size: 18px;
   }
   
   .panel-header h2 {
-    font-size: 20px;
+    font-size: 24px;
   }
   
   .timeline-card {
@@ -1395,16 +1397,16 @@ body {
   }
   
   .timeline-card-header h3 {
-    font-size: 15px;
+    font-size: 21px;
   }
   
   .timeline-time {
-    font-size: 13px;
+    font-size: 17px;
     padding: 2px 4px;
   }
   
   .duties-table {
-    font-size: 13px;
+    font-size: 17px;
   }
   
   .duties-table th,
@@ -1419,7 +1421,7 @@ body {
   
   .btn-primary {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
   }
   
   .map-selectors {
@@ -1428,8 +1430,8 @@ body {
   }
   
   .btn-map-select {
-    padding: 10px;
-    font-size: 13px;
+    padding: 12px;
+    font-size: 16px;
   }
   
   .map-footer-info {
