@@ -1377,7 +1377,7 @@ window.CEREMONY_DATA = ${dataString};
     let hasChanges = false;
 
     try {
-      const response = await fetch('/api/get-data');
+      const response = await fetch(`/api/get-data?t=${Date.now()}`);
       const result = await response.json();
       if (result.code === 0 && result.values && result.values.length > 0) {
         console.log("📡 [Success] 順利從飛書獲取即時排班數據！");

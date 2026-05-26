@@ -32,10 +32,13 @@ function makeRequest(url, method, headers = {}, body = null) {
 }
 
 export default async function handler(req, res) {
-  // Set CORS headers
+  // Set CORS and No-Cache headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
 
   const appId = process.env.LARK_APP_ID;
   const appSecret = process.env.LARK_APP_SECRET;
