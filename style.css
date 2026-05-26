@@ -1798,3 +1798,89 @@ body {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
+
+/* ==========================================================================
+   14. 老花友善 (Presbyopia Friendly) 執事分配分頁樣式
+   ========================================================================== */
+#tab-admin {
+  font-size: 17px !important;
+}
+
+#tab-admin h2 {
+  font-size: 26px !important;
+}
+
+#tab-admin h3 {
+  font-size: 22px !important;
+}
+
+.controls-desc {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+}
+
+#admin-volunteer-pool {
+  font-size: 18px !important;
+  line-height: 1.5 !important;
+  padding: 12px 16px !important;
+  height: 240px !important;
+}
+
+.admin-action-buttons button {
+  font-size: 18px !important;
+  padding: 12px 20px !important;
+}
+
+.admin-help-box {
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+}
+
+.admin-help-box h4 {
+  font-size: 18px !important;
+}
+
+.editor-stage-title-time h4 {
+  font-size: 20px !important;
+  font-weight: bold !important;
+}
+
+.editor-stage-title-time .badge {
+  font-size: 15px !important;
+  padding: 6px 12px !important;
+}
+
+.editor-role-label {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+}
+
+.editor-role-desc {
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  color: var(--text-muted) !important;
+}
+
+/* 下拉選單、手動輸入與按鈕的老花優化 */
+.admin-role-select,
+.admin-role-input {
+  font-size: 18px !important;
+  height: auto !important;
+  padding: 10px 14px !important;
+}
+
+.btn-delete-assignee {
+  font-size: 18px !important;
+  padding: 10px 14px !important;
+}
+
+.btn-add-assignee {
+  font-size: 15px !important;
+  padding: 6px 12px !important;
+}
+
+#btn-admin-reset {
+  font-size: 15px !important;
+  padding: 6px 12px !important;
+}
