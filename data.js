@@ -5,10 +5,30 @@ window.CEREMONY_DATA = {
   className: "普新精舍 60期夜間初級禪修班",
   ceremonyTitle: "結業頒證暨供燈供僧法會",
   defaultVolunteers: [
-    "蔡耀文(法果)", "賴怡芳(法倢)", "許藝娟(法慈)", "蕭日畯(法松)", "詹瑞貞(法持)", "陳一朗(法昇)", 
-    "葉燈超(法燈)", "李卉羚(法本)", "邱建燁(法翱)", "曾雅蘭(傳昧)", "田品萱(法印)", "詹佩宜(法憫)", 
-    "葉金鳳(法經)", "張燕芬(法儀)", "褚佩宜", "張雅雯(法空)", "鄭秀美(法岫)", "江美惠(傳彿)", 
-    "賴素綿(法平)", "張嘉年(法足)", "趙佳欣(法佳)", "張莉玲(法絮)", "吳漳(傳堅)", "林麗嬌(傳霈)"
+    "None",
+    "吳漳(傳堅)",
+    "張嘉年(法足)",
+    "張雅雯(法空)",
+    "曾雅蘭(傳昧)",
+    "林玲玲/法穩(第5組)",
+    "林麗嬌(傳霈)",
+    "江美惠(傳彿)",
+    "牛靖涵(傳郁)",
+    "田品萱(法印)",
+    "簡維君(第4組)",
+    "葉燈超(法燈)",
+    "葉金鳳(法經)",
+    "蔡耀文(法果)",
+    "許藝娟(法慈)",
+    "詹佩宜(法憫)",
+    "詹瑞貞(法持)",
+    "賴怡芳(法倢)",
+    "賴素綿(法平)",
+    "趙佳欣(法佳)",
+    "邱建燁(法翱)",
+    "鄭秀美(法岫)",
+    "黃品家/法敦(第5組)",
+    "黃湘婷(傳麗)"
   ],
   maps: {
     map_awards: {
@@ -109,9 +129,9 @@ window.CEREMONY_DATA = {
         { id: "award_check_list", title: "核對名單", assignee: "曾雅蘭(傳昧)、田品萱(法印)", desc: "現場核對出缺席與上台名單，如有缺席者，需通知遞證書人員將其證書置底。" },
         { id: "award_corridor_guide", title: "走廊引導", assignee: "張嘉年(法足)", desc: "在清淨後方及廊道引導排班的學員動線。" },
         { id: "award_emcee", title: "司儀", assignee: "詹佩宜(法憫)", desc: "呼「第X組」出班，主持典禮節奏。" },
-        { id: "award_audio", title: "音響", assignee: "蔡耀文(法果)、蕭日畯(法松)", desc: "負責播放《在哪裡》歌曲，配合拉班與拍照節奏控制音量。" },
-        { id: "award_photo", title: "攝影拍照", assignee: "陳一朗(法昇)", desc: "負責舞台合照與現場花絮拍攝。" },
-        { id: "award_light", title: "控燈", assignee: "葉燈超(法燈)", desc: "維持大合照時講堂最佳照明亮度。" }
+        { id: "award_audio", title: "音響", assignee: "None", desc: "負責播放《在哪裡》歌曲，配合拉班與拍照節奏控制音量。" },
+        { id: "award_photo", title: "攝影拍照", assignee: "牛靖涵(傳郁)", desc: "負責舞台合照與現場花絮拍攝。" },
+        { id: "award_light", title: "控燈", assignee: "黃湘婷(傳麗)", desc: "維持大合照時講堂最佳照明亮度。" }
       ],
       mapId: "map_awards",
       positions: [
@@ -256,7 +276,7 @@ window.CEREMONY_DATA = {
       ],
       roles: [
         { id: "sermon_emcee", title: "司儀呼班", assignee: "詹佩宜(法憫)", desc: "呼班起立，問訊，恭請住持法師慈悲開示。" },
-        { id: "sermon_audio", title: "音響播影片", assignee: "蔡耀文(法果)、蕭日畯(法松)", desc: "播放「我學佛•我分享」影片與麥克風音量調控。" },
+        { id: "sermon_audio", title: "音響播影片", assignee: "None", desc: "播放「我學佛•我分享」影片與麥克風音量調控。" },
         { id: "sermon_light", title: "控燈(影片)", assignee: "葉燈超(法燈)", desc: "播放影片時關燈，開示時恢復講堂明亮。" }
       ],
       mapId: "map_awards",
@@ -348,7 +368,7 @@ window.CEREMONY_DATA = {
         { id: "off_demo_west", title: "西單呼班.示範手勢", assignee: "趙佳欣(法佳)", desc: "西單學員供燈供僧禮儀與手勢引導示範。" },
         { id: "off_refill_lamp", title: "排燈補燈與引導", assignee: "林麗嬌(傳霈)、張嘉年(法足)", desc: "引導供奉，並於最後將摩尼寶珠燈板上 144 盞燈全部補齊排好。" },
         { id: "off_collect_redbag", title: "紅包收納", assignee: "詹瑞貞(法持)、趙佳欣(法佳)", desc: "備大紙袋，在供僧結束後，將盤內紅包收齊並交予指導法師。" },
-        { id: "off_control_light", title: "控燈", assignee: "葉燈超(法燈)", desc: "於供燈、供僧法會完畢時，開啟全場照明。" },
+        { id: "off_control_light", title: "控燈", assignee: "黃湘婷(傳麗)", desc: "於供燈、供僧法會完畢時，開啟全場照明。" },
         { id: "off_chairs", title: "排椅/備法師椅", assignee: "張嘉年(法足)", desc: "負責禪堂內法師座椅的清點與排設（住持獅子座、大眾法師座椅 5 張）。" },
         { id: "off_card_hold", title: "大合照字卡拿取", assignee: "學員代表", desc: "大合照時，安排摩尼寶珠板最前方的六位學員負責拿 12 片大合照字卡。" }
       ],
@@ -398,7 +418,7 @@ window.CEREMONY_DATA = {
         "各班發放證書：由各組學員長協助將全組個人的結業證書與全勤獎品等分發至學員手中。"
       ],
       roles: [
-        { id: "ann_speaker", title: "法務佈達說明", assignee: "詹佩宜(法憫)", desc: "負責宣講近期法會資訊及新班推廣事項。" },
+        { id: "ann_speaker", title: "法務佈達說明", assignee: "蔡耀文(法果)", desc: "負責宣講近期法會資訊及新班推廣事項。" },
         { id: "ann_distributor", title: "個人證書分發", assignee: "各組學員長", desc: "引導學員回座後，協助將本組結業證書、全勤獎與全勤獎品一一發放給學員。" }
       ],
       mapId: "map_awards",
