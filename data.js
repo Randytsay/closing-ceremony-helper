@@ -5,7 +5,6 @@ window.CEREMONY_DATA = {
   className: "普新精舍 60期夜間初級禪修班",
   ceremonyTitle: "結業頒證暨供燈供僧法會",
   defaultVolunteers: [
-    "None",
     "吳漳(傳堅)",
     "張嘉年(法足)",
     "張雅雯(法空)",
@@ -129,7 +128,7 @@ window.CEREMONY_DATA = {
         { id: "award_check_list", title: "核對名單", assignee: "曾雅蘭(傳昧)、田品萱(法印)", desc: "現場核對出缺席與上台名單，如有缺席者，需通知遞證書人員將其證書置底。" },
         { id: "award_corridor_guide", title: "走廊引導", assignee: "張嘉年(法足)", desc: "在清淨後方及廊道引導排班的學員動線。" },
         { id: "award_emcee", title: "司儀", assignee: "詹佩宜(法憫)", desc: "呼「第X組」出班，主持典禮節奏。" },
-        { id: "award_audio", title: "音響", assignee: "None", desc: "負責播放《在哪裡》歌曲，配合拉班與拍照節奏控制音量。" },
+        { id: "award_audio", title: "音響", assignee: "蔡耀文(法果)", desc: "負責播放《在哪裡》歌曲，配合拉班與拍照節奏控制音量。" },
         { id: "award_photo", title: "攝影拍照", assignee: "牛靖涵(傳郁)", desc: "負責舞台合照與現場花絮拍攝。" },
         { id: "award_light", title: "控燈", assignee: "黃湘婷(傳麗)", desc: "維持大合照時講堂最佳照明亮度。" }
       ],
@@ -276,7 +275,7 @@ window.CEREMONY_DATA = {
       ],
       roles: [
         { id: "sermon_emcee", title: "司儀呼班", assignee: "詹佩宜(法憫)", desc: "呼班起立，問訊，恭請住持法師慈悲開示。" },
-        { id: "sermon_audio", title: "音響播影片", assignee: "None", desc: "播放「我學佛•我分享」影片與麥克風音量調控。" },
+        { id: "sermon_audio", title: "音響播影片", assignee: "蔡耀文(法果)", desc: "播放「我學佛•我分享」影片與麥克風音量調控。" },
         { id: "sermon_light", title: "控燈(影片)", assignee: "葉燈超(法燈)", desc: "播放影片時關燈，開示時恢復講堂明亮。" }
       ],
       mapId: "map_awards",
