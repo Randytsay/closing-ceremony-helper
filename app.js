@@ -784,39 +784,58 @@ document.addEventListener("DOMContentLoaded", () => {
       
       let rolesFormHtml = "";
       stage.roles.forEach(role => {
-        // 確保目前指派的人名，即使不在 volunteerPool 中也能顯示在下拉選單裡
-        const currentAssignees = role.assignee.split(/[,、.\s]/).map(n => n.trim());
-        const combinedPool = Array.from(new Set([...volunteerPool, ...currentAssignees]));
+        // 拆分目前指派的多個姓名
+        let currentAssignees = role.assignee.split(/[,、.\s]/)
+          .map(n => n.trim())
+          .filter(n => n.length > 0 && n !== "None" && n !== "XXX");
 
-        // 判斷下拉選單預設應該選取哪一項
-        let selectedValue = "CUSTOM";
-        if (role.assignee === "XXX") {
-          selectedValue = "XXX";
-        } else if (combinedPool.includes(role.assignee)) {
-          selectedValue = role.assignee;
+        if (currentAssignees.length === 0) {
+          currentAssignees = ["XXX"];
         }
 
-        let selectOptionsHtml = `<option value="XXX" ${selectedValue === "XXX" ? "selected" : ""}>XXX (空缺)</option>`;
+        const combinedPool = Array.from(new Set([...volunteerPool, ...currentAssignees])).filter(n => n !== "XXX");
 
-        combinedPool.forEach(name => {
-          if (name && name !== "XXX") {
-            // 如果 role.assignee 是多個名字 (e.g. "義工A, 義工B")，我們提供直接 text input 修改以利多人排班！
-            const isSelected = selectedValue === name;
-            selectOptionsHtml += `<option value="${name}" ${isSelected ? "selected" : ""}>${name}</option>`;
+        let assigneesInputsHtml = "";
+        currentAssignees.forEach((name, idx) => {
+          let selectOptionsHtml = `<option value="XXX" ${name === "XXX" ? "selected" : ""}>XXX (空缺)</option>`;
+          
+          let selectedValue = "CUSTOM";
+          if (name === "XXX") {
+            selectedValue = "XXX";
+          } else if (combinedPool.includes(name)) {
+            selectedValue = name;
           }
+
+          combinedPool.forEach(pName => {
+            if (pName && pName !== "XXX") {
+              selectOptionsHtml += `<option value="${pName}" ${selectedValue === pName ? "selected" : ""}>${pName}</option>`;
+            }
+          });
+
+          assigneesInputsHtml += `
+            <div class="assignee-input-row" style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
+              <select class="admin-role-select" data-stage-id="${stage.id}" data-role-id="${role.id}" data-index="${idx}" style="flex: 1; min-width: 0; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-secondary); color: var(--text-primary);">
+                ${selectOptionsHtml}
+                <option value="CUSTOM" ${selectedValue === "CUSTOM" ? "selected" : ""}>✍️ 手動輸入...</option>
+              </select>
+              <input type="text" class="admin-role-input" data-stage-id="${stage.id}" data-role-id="${role.id}" data-index="${idx}" value="${name === "XXX" ? "" : name}" placeholder="手動輸入人名..." style="display: ${selectedValue === "CUSTOM" ? "block" : "none"}; flex: 1; min-width: 0; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-secondary); color: var(--text-primary);" />
+              <button type="button" class="btn-delete-assignee" data-stage-id="${stage.id}" data-role-id="${role.id}" data-index="${idx}" style="padding: 6px 10px; background: none; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-muted); cursor: pointer; transition: all 0.2s;" title="刪除此人">🗑️</button>
+            </div>
+          `;
         });
 
         rolesFormHtml += `
-          <div class="editor-role-row">
-            <span class="editor-role-label">${role.title}</span>
-            <select class="admin-role-select" data-stage-id="${stage.id}" data-role-id="${role.id}">
-              ${selectOptionsHtml}
-              <option value="CUSTOM" ${selectedValue === "CUSTOM" ? "selected" : ""}>✍️ 手動輸入/多人分工...</option>
-            </select>
-            <input type="text" class="admin-role-input" data-stage-id="${stage.id}" data-role-id="${role.id}" value="${role.assignee}" placeholder="指派人員名字..." />
-          </div>
-          <div class="editor-role-desc" style="margin-left: 160px; margin-bottom: 8px;">
-            ${role.desc}
+          <div class="editor-role-row" style="display: flex; flex-direction: column; gap: 4px; padding: 12px 0; border-bottom: 1px dashed var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span class="editor-role-label" style="font-weight: 700; font-size: 15px; color: var(--text-primary); text-align: left; width: auto; max-width: 70%; line-height: 1.3;">${role.title}</span>
+              <button type="button" class="btn-add-assignee btn-secondary" data-stage-id="${stage.id}" data-role-id="${role.id}" style="padding: 4px 10px; font-size: 12px; border-radius: 6px; display: flex; align-items: center; gap: 4px; border: 1px solid var(--border-color); background-color: var(--bg-secondary); color: var(--text-primary); cursor: pointer;">➕ 增加人員</button>
+            </div>
+            <div class="assignees-container" style="display: flex; flex-direction: column;">
+              ${assigneesInputsHtml}
+            </div>
+            <div class="editor-role-desc" style="font-size: 13px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; margin-left: 0;">
+              ${role.desc}
+            </div>
           </div>
         `;
       });
@@ -826,16 +845,83 @@ document.addEventListener("DOMContentLoaded", () => {
           <h4>${stage.title}</h4>
           <span class="badge">${stage.time}</span>
         </div>
-        <div class="editor-roles-grid">
+        <div class="editor-roles-grid" style="display: flex; flex-direction: column; gap: 8px; padding-left: 0;">
           ${rolesFormHtml}
         </div>
       `;
 
-      // 事件綁定：監聽下拉選單與輸入框變化，即時同步至 in-memory data
+      // 監聽增加人員按鈕
+      stageItem.querySelectorAll(".btn-add-assignee").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const stageId = btn.getAttribute("data-stage-id");
+          const roleId = btn.getAttribute("data-role-id");
+          const s = data.stages.find(x => x.id === stageId);
+          if (s) {
+            const r = s.roles.find(x => x.id === roleId);
+            if (r) {
+              let assignees = r.assignee.split(/[,、.\s]/)
+                .map(n => n.trim())
+                .filter(n => n.length > 0 && n !== "None" && n !== "XXX");
+              assignees.push("XXX");
+              const updated = assignees.join("、");
+              updateAssigneeInMemory(stageId, roleId, updated);
+            }
+          }
+        });
+      });
+
+      // 監聽刪除人員按鈕
+      stageItem.querySelectorAll(".btn-delete-assignee").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const stageId = btn.getAttribute("data-stage-id");
+          const roleId = btn.getAttribute("data-role-id");
+          const idx = parseInt(btn.getAttribute("data-index"), 10);
+          const s = data.stages.find(x => x.id === stageId);
+          if (s) {
+            const r = s.roles.find(x => x.id === roleId);
+            if (r) {
+              let assignees = r.assignee.split(/[,、.\s]/)
+                .map(n => n.trim())
+                .filter(n => n.length > 0 && n !== "None");
+              
+              if (assignees.length > 0) {
+                assignees.splice(idx, 1);
+              }
+              const updated = assignees.join("、") || "XXX";
+              updateAssigneeInMemory(stageId, roleId, updated);
+            }
+          }
+        });
+      });
+
+      // Helper: 收集某個 role 所有欄位的值並更新
+      function syncRoleAssignees(stageId, roleId, stageContainer) {
+        const values = [];
+        const selectElements = stageContainer.querySelectorAll(`.admin-role-select[data-stage-id="${stageId}"][data-role-id="${roleId}"]`);
+        
+        selectElements.forEach(select => {
+          const index = select.getAttribute("data-index");
+          const input = stageContainer.querySelector(`.admin-role-input[data-stage-id="${stageId}"][data-role-id="${roleId}"][data-index="${index}"]`);
+          
+          const selVal = select.value;
+          if (selVal === "CUSTOM") {
+            const textVal = input.value.trim();
+            if (textVal) values.push(textVal);
+          } else if (selVal !== "XXX") {
+            values.push(selVal);
+          }
+        });
+
+        const updated = values.join("、") || "XXX";
+        updateAssigneeInMemory(stageId, roleId, updated);
+      }
+
+      // 監聽下拉選單變化
       stageItem.querySelectorAll(".admin-role-select").forEach(select => {
         const stageId = select.getAttribute("data-stage-id");
         const roleId = select.getAttribute("data-role-id");
-        const textInput = stageItem.querySelector(`.admin-role-input[data-stage-id="${stageId}"][data-role-id="${roleId}"]`);
+        const idx = select.getAttribute("data-index");
+        const textInput = stageItem.querySelector(`.admin-role-input[data-stage-id="${stageId}"][data-role-id="${roleId}"][data-index="${idx}"]`);
 
         select.addEventListener("change", () => {
           const val = select.value;
@@ -843,29 +929,30 @@ document.addEventListener("DOMContentLoaded", () => {
             textInput.style.display = "block";
             textInput.focus();
           } else {
-            textInput.value = val;
-            updateAssigneeInMemory(stageId, roleId, val);
+            textInput.style.display = "none";
+            textInput.value = val === "XXX" ? "" : val;
+            syncRoleAssignees(stageId, roleId, stageItem);
           }
         });
       });
 
+      // 監聽文字輸入框變化
       stageItem.querySelectorAll(".admin-role-input").forEach(input => {
         const stageId = input.getAttribute("data-stage-id");
         const roleId = input.getAttribute("data-role-id");
-        const select = stageItem.querySelector(`.admin-role-select[data-stage-id="${stageId}"][data-role-id="${roleId}"]`);
+        const idx = input.getAttribute("data-index");
+        const select = stageItem.querySelector(`.admin-role-select[data-stage-id="${stageId}"][data-role-id="${roleId}"][data-index="${idx}"]`);
 
         input.addEventListener("input", () => {
           const val = input.value.trim();
-          
-          // 如果輸入的值在下拉選單中有對應，就同步下拉選單；否則下拉選單選「手動輸入」
           const hasOption = Array.from(select.options).some(opt => opt.value === val);
           if (hasOption) {
             select.value = val;
+            input.style.display = "none";
           } else {
             select.value = "CUSTOM";
           }
-          
-          updateAssigneeInMemory(stageId, roleId, val);
+          syncRoleAssignees(stageId, roleId, stageItem);
         });
       });
 
