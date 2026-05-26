@@ -4,3 +4,4 @@
 *.doc
 *.jpg
 .DS_Store
+.vercel
