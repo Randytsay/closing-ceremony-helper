@@ -1,0 +1,1450 @@
+/* ==========================================================================
+   普新精舍 結業典禮掌中寶 - 核心樣式表 (style.css)
+   採用「現代禪風」高規設計，支援完全響應式佈局與深/淺色雙主題。
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. 變數與主題設定
+   -------------------------------------------------------------------------- */
+:root {
+  /* HSL 禪意色彩系統 */
+  --hue-gold: 43;
+  --hue-green: 154;
+  
+  /* 深色模式變數 (預設) */
+  --bg-primary: #121212;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #242424;
+  --bg-glass: rgba(26, 26, 26, 0.7);
+  --border-color: rgba(212, 175, 55, 0.15);
+  --border-focus: rgba(212, 175, 55, 0.4);
+  
+  --text-primary: #f0ebd8;
+  --text-secondary: #c4bfa5;
+  --text-muted: #8c8876;
+  
+  --color-gold: hsl(var(--hue-gold), 65%, 55%);
+  --color-gold-hover: hsl(var(--hue-gold), 75%, 60%);
+  --color-gold-glow: rgba(212, 175, 55, 0.35);
+  
+  --color-green: hsl(var(--hue-green), 28%, 20%);
+  --color-green-light: hsl(var(--hue-green), 20%, 45%);
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.8);
+  --shadow-gold: 0 0 20px rgba(212, 175, 55, 0.25);
+  
+  --glass-blur: blur(12px);
+  --font-serif: 'Noto Serif TC', serif;
+  --font-sans: 'Outfit', 'Inter', -apple-system, sans-serif;
+}
+
+[data-theme="light"] {
+  /* 淺色模式變數 (優雅沙色) */
+  --bg-primary: #FAF8F5;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F2EFE9;
+  --bg-glass: rgba(255, 255, 255, 0.8);
+  --border-color: rgba(184, 134, 11, 0.15);
+  --border-focus: rgba(184, 134, 11, 0.4);
+  
+  --text-primary: #2C2A29;
+  --text-secondary: #5C5854;
+  --text-muted: #8C8680;
+  
+  --color-gold: hsl(var(--hue-gold), 70%, 40%);
+  --color-gold-hover: hsl(var(--hue-gold), 80%, 35%);
+  --color-gold-glow: rgba(184, 134, 11, 0.2);
+  
+  --color-green: hsl(var(--hue-green), 28%, 15%);
+  --color-green-light: hsl(var(--hue-green), 20%, 35%);
+  
+  --shadow-sm: 0 2px 8px rgba(44, 42, 41, 0.08);
+  --shadow-md: 0 8px 24px rgba(44, 42, 41, 0.1);
+  --shadow-lg: 0 16px 48px rgba(44, 42, 41, 0.15);
+  --shadow-gold: 0 0 15px rgba(184, 134, 11, 0.15);
+  
+  --glass-blur: blur(8px);
+}
+
+/* --------------------------------------------------------------------------
+   2. 全域基礎樣式與微動畫
+   -------------------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+/* 頂部極光背景漸層 */
+.glow-bg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1200px;
+  height: 400px;
+  background: radial-gradient(circle at top, rgba(212, 175, 55, 0.12) 0%, rgba(30, 54, 45, 0.08) 50%, transparent 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 滾動條美化 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold);
+}
+
+/* --------------------------------------------------------------------------
+   3. 版面佈局 (Layout Container)
+   -------------------------------------------------------------------------- */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px 64px 16px;
+  position: relative;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   4. 頂部標題列 (App Header)
+   -------------------------------------------------------------------------- */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.lotus-icon {
+  font-size: 40px;
+  color: var(--color-gold);
+  filter: drop-shadow(0 0 8px var(--color-gold-glow));
+  animation: float-animation 6s ease-in-out infinite;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-text .sub-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.header-text .main-title {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.btn-theme {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-theme:hover {
+  border-color: var(--color-gold);
+  box-shadow: var(--shadow-gold);
+  transform: scale(1.05);
+}
+
+/* --------------------------------------------------------------------------
+   5. 導覽分頁列 (Navigation Tabs)
+   -------------------------------------------------------------------------- */
+.nav-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: var(--bg-glass);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 6px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-md);
+}
+
+.nav-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 12px 8px;
+  border-radius: 12px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-tab:hover {
+  color: var(--color-gold);
+  background: rgba(212, 175, 55, 0.05);
+}
+
+.nav-tab.active {
+  background: var(--bg-tertiary);
+  color: var(--color-gold);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   6. 頁面面板核心樣式 (Tab Panels)
+   -------------------------------------------------------------------------- */
+.tab-panel {
+  display: none;
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+.panel-header {
+  margin-bottom: 24px;
+}
+
+.panel-header h2 {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.panel-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   7. 流程時間軸樣式 (Timeline)
+   -------------------------------------------------------------------------- */
+.timeline-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  padding-left: 20px;
+}
+
+/* 時間軸左側虛線 */
+.timeline-container::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 6px;
+  width: 2px;
+  background: repeating-linear-gradient(to bottom, var(--border-color) 0px, var(--border-color) 6px, transparent 6px, transparent 12px);
+}
+
+/* 時間軸卡片結構 */
+.timeline-card {
+  background: var(--bg-glass);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.timeline-card:hover {
+  border-color: var(--color-gold-hover);
+  box-shadow: var(--shadow-md), var(--shadow-gold);
+}
+
+/* 卡片左側時間軸節點 */
+.timeline-card::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: -20px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  z-index: 2;
+}
+
+.timeline-card.active::before {
+  background: var(--color-gold);
+  border-color: var(--color-gold);
+  box-shadow: 0 0 10px var(--color-gold);
+  animation: pulse-border 2s infinite;
+}
+
+/* 卡片主體 header */
+.timeline-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.timeline-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.timeline-time {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-gold);
+  background: rgba(212, 175, 55, 0.1);
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.timeline-card-header h3 {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.timeline-duration {
+  font-size: 12px;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.timeline-arrow {
+  font-size: 12px;
+  color: var(--text-muted);
+  transform: rotate(0deg);
+}
+
+.timeline-card.expanded .timeline-arrow {
+  transform: rotate(180deg);
+}
+
+/* 卡片折疊內容 */
+.timeline-card-content {
+  display: none;
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px dashed var(--border-color);
+  animation: slideDown 0.3s ease forwards;
+}
+
+.timeline-card.expanded .timeline-card-content {
+  display: block;
+}
+
+.timeline-desc {
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+/* 注意事項區塊 */
+.timeline-notes-box {
+  background: var(--bg-tertiary);
+  border-left: 3px solid var(--color-gold);
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.timeline-notes-box h5 {
+  font-size: 13px;
+  color: var(--color-gold);
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.timeline-notes-box ul {
+  list-style-type: none;
+}
+
+.timeline-notes-box li {
+  font-size: 14px;
+  color: var(--text-secondary);
+  position: relative;
+  padding-left: 14px;
+  margin-bottom: 4px;
+}
+
+.timeline-notes-box li::before {
+  content: "•";
+  color: var(--color-gold);
+  position: absolute;
+  left: 0;
+}
+
+/* 執事名單表格 */
+.timeline-duties-box h5 {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.duties-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.duties-table th,
+.duties-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.duties-table th {
+  color: var(--text-muted);
+  font-weight: 500;
+  background: rgba(212, 175, 55, 0.02);
+}
+
+.duties-table td strong {
+  color: var(--text-primary);
+}
+
+.highlight-name {
+  color: var(--color-gold);
+  background: rgba(212, 175, 55, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.highlight-name:hover {
+  background: var(--color-gold);
+  color: var(--bg-primary);
+}
+
+.btn-locate {
+  background: transparent;
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold);
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-locate:hover {
+  background: var(--color-gold);
+  color: var(--bg-primary);
+}
+
+/* --------------------------------------------------------------------------
+   8. 個人執事查詢樣式 (Search Tab)
+   -------------------------------------------------------------------------- */
+.search-form {
+  background: var(--bg-glass);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.search-input-group {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+#search-name-input {
+  width: 100%;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  padding: 12px 12px 12px 42px;
+}
+
+#search-name-input:focus {
+  border-color: var(--color-gold);
+  outline: none;
+  box-shadow: var(--shadow-gold);
+}
+
+.btn-clear {
+  position: absolute;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-primary {
+  background: var(--color-gold);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 28px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  background: var(--color-gold-hover);
+  box-shadow: var(--shadow-gold);
+}
+
+/* 空白狀態 */
+.search-empty-state {
+  background: var(--bg-glass);
+  border: 1px dashed var(--border-color);
+  border-radius: 16px;
+  padding: 48px 24px;
+  text-align: center;
+  max-width: 500px;
+  margin: 40px auto;
+}
+
+.state-icon {
+  font-size: 48px;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 16px;
+}
+
+.search-empty-state h3 {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.search-empty-state p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* 個人專屬執事卡卡片 */
+.personal-duty-card {
+  background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(212, 175, 55, 0.03) 100%);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--color-gold);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--shadow-md), var(--shadow-gold);
+  animation: scaleUp 0.3s ease forwards;
+}
+
+.personal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.personal-welcome h3 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.personal-welcome p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.personal-badge {
+  background: var(--color-gold);
+  color: var(--bg-primary);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+/* 個人任務時間軸項目 */
+.personal-task-item {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.personal-task-item:last-child {
+  margin-bottom: 0;
+}
+
+.personal-task-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.personal-task-time-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.personal-task-time {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  color: var(--color-gold);
+  font-size: 13px;
+  background: rgba(212, 175, 55, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.personal-task-stage {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.personal-task-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.personal-task-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   9. 互動 SVG 站位地圖樣式 (Maps Tab)
+   -------------------------------------------------------------------------- */
+.map-selectors {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.btn-map-select {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 12px;
+  border-radius: 12px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-map-select:hover {
+  color: var(--color-gold);
+  border-color: var(--color-gold);
+}
+
+.btn-map-select.active {
+  background: var(--bg-tertiary);
+  color: var(--color-gold);
+  border-color: var(--color-gold);
+  box-shadow: var(--shadow-sm), var(--shadow-gold);
+}
+
+/* 地圖展示卡片 */
+.map-display-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.map-card {
+  background: var(--bg-glass);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow-md);
+}
+
+.map-card-header {
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+}
+
+.map-card-header h3 {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--text-primary);
+}
+
+.map-card-header p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* SVG 渲染區 */
+.map-wrapper {
+  width: 100%;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* SVG 內在樣式 */
+.svg-element {
+  width: 100%;
+  height: auto;
+  max-height: 500px;
+  display: block;
+}
+
+/* SVG 元素樣式定義 */
+.svg-hall-bg { fill: var(--bg-tertiary); }
+.svg-wall { stroke: var(--border-color); stroke-width: 3; fill: none; }
+.svg-stage { fill: rgba(30, 54, 45, 0.4); stroke: var(--border-color); stroke-width: 2; }
+.svg-lectern { fill: linear-gradient(to bottom, #d4af37, #b8860b); stroke: #d4af37; stroke-width: 1; }
+.svg-chair { fill: var(--bg-secondary); stroke: var(--border-color); stroke-width: 1; }
+.svg-chair-label { font-size: 9px; fill: var(--text-muted); text-anchor: middle; font-family: var(--font-sans); }
+.svg-label-text { font-family: var(--font-serif); font-size: 14px; fill: var(--text-muted); opacity: 0.6; text-anchor: middle; }
+
+/* 執事站點樣式 */
+.svg-officer-spot {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.svg-officer-circle {
+  fill: var(--bg-primary);
+  stroke: var(--color-gold);
+  stroke-width: 2.5;
+  transition: all 0.3s ease;
+}
+
+.svg-officer-spot:hover .svg-officer-circle {
+  fill: var(--color-gold);
+  stroke: var(--text-primary);
+  filter: drop-shadow(0 0 8px var(--color-gold));
+}
+
+.svg-officer-label {
+  font-size: 9px;
+  font-weight: bold;
+  fill: var(--text-primary);
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-family: var(--font-sans);
+  pointer-events: none;
+  user-select: none;
+}
+
+.svg-officer-spot:hover .svg-officer-label {
+  fill: var(--bg-primary);
+}
+
+/* 站位閃爍動畫 (高亮時) */
+@keyframes pulse-spot {
+  0% { r: 10; stroke-width: 2.5; opacity: 1; }
+  50% { r: 16; stroke-width: 4; stroke: var(--color-gold); opacity: 0.8; }
+  100% { r: 10; stroke-width: 2.5; opacity: 1; }
+}
+
+.svg-officer-spot.highlighted .svg-officer-circle {
+  animation: pulse-spot 1.5s infinite;
+  fill: var(--color-gold) !important;
+  stroke: #ffffff !important;
+  filter: drop-shadow(0 0 12px var(--color-gold));
+}
+
+.svg-officer-spot.highlighted .svg-officer-label {
+  fill: #121212 !important;
+}
+
+/* 地圖圖例與互動提示 */
+.map-footer-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 13px;
+}
+
+.map-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-stage { background: rgba(30, 54, 45, 0.4); border: 1px solid var(--border-color); }
+.dot-chair { background: var(--bg-secondary); border: 1px solid var(--border-color); }
+.dot-officer { background: var(--bg-primary); border: 2px solid var(--color-gold); }
+.dot-flow { border-top: 2px dashed var(--color-gold); width: 16px; border-radius: 0; }
+
+.interactive-tip {
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 地圖點擊執事明細卡 */
+.map-role-details-card {
+  background: var(--bg-glass);
+  backdrop-filter: var(--glass-blur);
+  border: 1.5px solid var(--color-gold);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: var(--shadow-md), var(--shadow-gold);
+  animation: slideUp 0.3s ease forwards;
+}
+
+.detail-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 8px;
+}
+
+.detail-card-header h4 {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  color: var(--text-primary);
+}
+
+.badge {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--color-gold);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.detail-row {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  color: var(--text-muted);
+}
+
+.detail-row p {
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   10. 歌曲梵唄練習區樣式 (Songs Tab)
+   -------------------------------------------------------------------------- */
+.songs-layout {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 20px;
+}
+
+/* 播放器卡片 */
+.audio-player-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  height: fit-content;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.audio-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.music-note {
+  font-size: 32px;
+  color: var(--color-gold);
+  animation: pulse-border 3s infinite;
+}
+
+.audio-title-info h3 {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
+.audio-title-info p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* 原生播放器樣式微調 (黃金色主題適配) */
+.custom-audio-wrapper audio {
+  width: 100%;
+  outline: none;
+}
+
+.audio-tips {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* 歌詞卡片容器 */
+.lyrics-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.lyrics-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.lyrics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.lyrics-header h3 {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  color: var(--color-gold);
+}
+
+.lyrics-melody {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.lyrics-content {
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.lyrics-stanza {
+  margin-bottom: 4px;
+}
+
+.highlight-stanza {
+  color: var(--color-gold);
+  font-weight: 500;
+}
+
+.lyrics-notes, .lyrics-notes p {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-align: left;
+}
+
+/* --------------------------------------------------------------------------
+   11. 排班編輯器樣式 (Admin Tab)
+   -------------------------------------------------------------------------- */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 20px;
+}
+
+/* 左側控制面板卡片 */
+.admin-controls-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 20px;
+  height: fit-content;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-controls-card h3 {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  color: var(--text-primary);
+}
+
+.controls-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+#admin-volunteer-pool {
+  width: 100%;
+  height: 200px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  padding: 12px;
+  resize: vertical;
+}
+
+#admin-volunteer-pool:focus {
+  border-color: var(--color-gold);
+  outline: none;
+}
+
+.admin-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+.btn-large {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 16px;
+}
+
+.admin-help-box {
+  background: var(--bg-tertiary);
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.admin-help-box h4 {
+  color: var(--color-gold);
+  margin-bottom: 6px;
+}
+
+.admin-help-box ol {
+  padding-left: 16px;
+  color: var(--text-secondary);
+}
+
+.admin-help-box li {
+  margin-bottom: 6px;
+}
+
+/* 右側排班列表編輯卡片 */
+.admin-editor-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.editor-header h3 {
+  font-family: var(--font-serif);
+  font-size: 20px;
+}
+
+.btn-danger-outline {
+  background: transparent;
+  border: 1px solid rgba(220, 53, 69, 0.4);
+  color: #dc3545;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-danger-outline:hover {
+  background: #dc3545;
+  color: #ffffff;
+  border-color: #dc3545;
+}
+
+.btn-small {
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+/* 編輯階段列表 */
+.editor-stages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.editor-stage-item {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.editor-stage-title-time {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.editor-stage-title-time h4 {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.editor-roles-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.editor-role-row {
+  display: grid;
+  grid-template-columns: 160px 180px 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.editor-role-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.editor-role-row select,
+.editor-role-row input {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  width: 100%;
+}
+
+.editor-role-row select:focus,
+.editor-role-row input:focus {
+  border-color: var(--color-gold);
+  outline: none;
+}
+
+.editor-role-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   12. 頁尾樣式 (App Footer)
+   -------------------------------------------------------------------------- */
+.app-footer {
+  margin-top: 48px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   13. 動態效果 (Keyframe Animations)
+   -------------------------------------------------------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float-animation {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(3deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes pulse-border {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.04); opacity: 0.85; filter: drop-shadow(0 0 10px var(--color-gold)); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* --------------------------------------------------------------------------
+   14. 手機響應式設計 (RWD Breakpoints)
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .songs-layout,
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .lyrics-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    font-size: 15px;
+  }
+  
+  .app-container {
+    padding: 16px 8px 48px 8px;
+  }
+  
+  .lotus-icon {
+    font-size: 32px;
+  }
+  
+  .header-text .main-title {
+    font-size: 20px;
+  }
+  
+  .nav-tabs {
+    border-radius: 12px;
+    padding: 3px;
+  }
+  
+  .nav-tab {
+    padding: 8px 4px;
+    font-size: 12px;
+    gap: 2px;
+  }
+  
+  .nav-tab .tab-icon {
+    font-size: 16px;
+  }
+  
+  .panel-header h2 {
+    font-size: 20px;
+  }
+  
+  .timeline-card {
+    padding: 12px 14px;
+  }
+  
+  .timeline-title-group {
+    gap: 8px;
+  }
+  
+  .timeline-card-header h3 {
+    font-size: 15px;
+  }
+  
+  .timeline-time {
+    font-size: 13px;
+    padding: 2px 4px;
+  }
+  
+  .duties-table {
+    font-size: 13px;
+  }
+  
+  .duties-table th,
+  .duties-table td {
+    padding: 8px 4px;
+  }
+  
+  .search-form {
+    flex-direction: column;
+    padding: 12px;
+  }
+  
+  .btn-primary {
+    width: 100%;
+    padding: 10px;
+  }
+  
+  .map-selectors {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  
+  .btn-map-select {
+    padding: 10px;
+    font-size: 13px;
+  }
+  
+  .map-footer-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .editor-role-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  
+  .editor-role-label {
+    font-size: 13px;
+    color: var(--color-gold);
+  }
+}

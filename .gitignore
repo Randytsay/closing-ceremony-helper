@@ -1,0 +1,6 @@
+# Keep repo clean from raw files
+*.xlsx
+*.pdf
+*.doc
+*.jpg
+.DS_Store
