@@ -5,10 +5,14 @@ window.CEREMONY_DATA = {
   className: "普新精舍 60期夜間初級禪修班",
   ceremonyTitle: "結業頒證暨供燈供僧法會",
   defaultVolunteers: [
+    "9位學員長",
     "吳漳(傳堅)",
     "張嘉年(法足)",
+    "張燕芬(法儀)",
+    "張莉玲(法絮)",
     "張雅雯(法空)",
     "曾雅蘭(傳昧)",
+    "李卉羚(法本)",
     "林玲玲/法穩(第5組)",
     "林麗嬌(傳霈)",
     "江美惠(傳彿)",
@@ -25,6 +29,7 @@ window.CEREMONY_DATA = {
     "賴素綿(法平)",
     "趙佳欣(法佳)",
     "邱建燁(法翱)",
+    "邱黃秀枝(傳開)",
     "鄭秀美(法岫)",
     "黃品家/法敦(第5組)",
     "黃湘婷(傳麗)"
@@ -56,7 +61,7 @@ window.CEREMONY_DATA = {
         "引導按「座位表」入坐。"
       ],
       roles: [
-        { id: "reg_absent", title: "登錄出缺席及名單發放", assignee: "曾雅蘭(傳昧)、田品萱(法印)", desc: "將名單登錄，並於 19:30 將最終名單交給遞證書人員，以便將未出席者證書放在下面。" },
+        { id: "reg_absent", title: "登錄出缺席及名單發放", assignee: "賴素綿(法平)、許藝娟(法慈)", desc: "將名單登錄，並於 19:30 將最終名單交給遞證書人員，以便將未出席者證書放在下面。" },
         { id: "explain_stickers", title: "說明豆貼與提醒供僧", assignee: "曾雅蘭(傳昧)、田品萱(法印)", desc: "全勤(紅)、福慧(黃)、精進(綠)、勤學(白)，貼於學員身上，號碼為領獎順序。擺放紅包袋並提醒有供僧。" },
         { id: "guide_seats", title: "座椅座位引導", assignee: "張雅雯(法空)、鄭秀美(法岫)", desc: "引導各組學員依照座位表入座。" }
       ],
@@ -78,7 +83,7 @@ window.CEREMONY_DATA = {
         "全班合照時，雙手左右上下交換呈「長方形框」手勢，齊唱「照相、照相、照相.照相.照相」。"
       ],
       roles: [
-        { id: "rehearse_explain", title: "預演說明", assignee: "詹佩宜(法憫)", desc: "口頭說明流程行儀與動作要領。" },
+        { id: "rehearse_explain", title: "預演說明", assignee: "蔡耀文(法果)", desc: "口頭說明流程行儀與動作要領。" },
         { id: "rehearse_demo", title: "預演動作示範", assignee: "學長團隊", desc: "示範問訊、領證、持證、齊唱「在哪裡」以及退場動線。" },
         { id: "weina_yuezhong", title: "維那.悅眾", assignee: "邱建燁(法翱)、吳漳(傳堅)", desc: "負責預演及典禮過程中的梵唄領唱與木魚板眼調控。" }
       ],
@@ -122,13 +127,13 @@ window.CEREMONY_DATA = {
       roles: [
         { id: "award_hand_cert", title: "遞證書與獎品", assignee: "林麗嬌(傳霈)、江美惠(傳彿)", desc: "由東單遞送證書＆獎品，可先放2盤在住持法師講桌上。" },
         { id: "award_pull_line", title: "中央走道拉班", assignee: "賴素綿(法平)、許藝娟(法慈)", desc: "負責中央走道拉班，拉班順序為第 1 ➡ 9 組，一組一組上台領證。" },
-        { id: "award_guide_up", title: "引導上台", assignee: "鄭秀美(法岫)", desc: "在講堂前方引導學員依序上台定位。" },
+        { id: "award_guide_up", title: "引導上台", assignee: "葉金鳳(法經)", desc: "在講堂前方引導學員依序上台定位。" },
         { id: "award_guide_down", title: "引導下台歸位", assignee: "張雅雯(法空)", desc: "引導拍照完學員走師父椅後方，從西單前廊出，再由講堂後門歸位。" },
         { id: "award_cut_pos", title: "切班定位(拍照)", assignee: "詹瑞貞(法持)、趙佳欣(法佳)", desc: "負責舞台前方東西兩側，調整學員切班與合照定位站姿。" },
         { id: "award_check_list", title: "核對名單", assignee: "曾雅蘭(傳昧)、田品萱(法印)", desc: "現場核對出缺席與上台名單，如有缺席者，需通知遞證書人員將其證書置底。" },
         { id: "award_corridor_guide", title: "走廊引導", assignee: "張嘉年(法足)", desc: "在清淨後方及廊道引導排班的學員動線。" },
         { id: "award_emcee", title: "司儀", assignee: "詹佩宜(法憫)", desc: "呼「第X組」出班，主持典禮節奏。" },
-        { id: "award_audio", title: "音響", assignee: "XXX", desc: "負責播放《在哪裡》歌曲，配合拉班與拍照節奏控制音量。" },
+        { id: "award_audio", title: "音響", assignee: "吳漳(傳堅)", desc: "負責播放《在哪裡》歌曲，配合拉班與拍照節奏控制音量。" },
         { id: "award_photo", title: "攝影拍照", assignee: "牛靖涵(傳郁)", desc: "負責舞台合照與現場花絮拍攝。" },
         { id: "award_light", title: "控燈", assignee: "黃湘婷(傳麗)", desc: "維持大合照時講堂最佳照明亮度。" }
       ],
@@ -176,7 +181,7 @@ window.CEREMONY_DATA = {
         "學員依照黃色豆豆貼順序排班，個別上台領證並一起合影。"
       ],
       roles: [
-        { id: "awards_sincere_check", title: "核對名單與拉班", assignee: "曾雅蘭(傳昧)、田品萱(法印)", desc: "在清淨後方核對黃色豆貼，引導福慧精進學員依序排班。" }
+        { id: "awards_sincere_check", title: "核對名單與拉班", assignee: "李卉羚(法本)、張燕芬(法儀)", desc: "在清淨後方核對黃色豆貼，引導福慧精進學員依序排班。" }
       ],
       mapId: "map_awards",
       positions: [
@@ -229,7 +234,7 @@ window.CEREMONY_DATA = {
       ],
       roles: [
         { id: "bodhi_pull_leader", title: "學長拉班", assignee: "張嘉年(法足)", desc: "於全勤獎頒發時，引導學員長團隊出位至講堂後方集合排班。" },
-        { id: "bodhi_pull_staff", title: "課務拉班", assignee: "張嘉年(法足)", desc: "於全勤獎頒發時，引導課務團隊出位至講堂後方集合排班。" },
+        { id: "bodhi_pull_staff", title: "課務拉班", assignee: "張莉玲(法絮)", desc: "於全勤獎頒發時，引導課務團隊出位至講堂後方集合排班。" },
         { id: "bodhi_leader_rep", title: "總學長領獎代表", assignee: "蔡耀文(法果)", desc: "代表全體學員長與學長團隊上台接受住持法師頒獎。" },
         { id: "bodhi_staff_rep", title: "課務長領獎代表", assignee: "課務長", desc: "代表全體課務團隊上台接受住持法師頒獎。" }
       ],
@@ -254,7 +259,7 @@ window.CEREMONY_DATA = {
       roles: [
         { id: "share_bell", title: "敲地鐘提醒", assignee: "邱建燁(法翱)", desc: "負責計時，超過 3 分鐘敲地鐘 1 聲，之後依時限加敲，提醒發言者。" },
         { id: "share_speakers", title: "心得分享代表", assignee: "簡維君(第4組)、林玲玲/法穩(第5組)、黃品家/法敦(第5組)", desc: "準備心得稿，依司儀呼班上台站於法師旁分享。每人 3 分鐘。" },
-        { id: "share_mic", title: "遞無線麥克風", assignee: "張雅雯(法空)、鄭秀美(法岫)", desc: "負責遞送無線麥克風給分享學員，並在分享結束後收回。" }
+        { id: "share_mic", title: "遞無線麥克風", assignee: "鄭秀美(法岫)", desc: "負責遞送無線麥克風給分享學員，並在分享結束後收回。" }
       ],
       mapId: "map_awards",
       positions: [
@@ -302,7 +307,7 @@ window.CEREMONY_DATA = {
         { id: "lamp_flip", title: "翻亮大眾燈", assignee: "曾雅蘭(傳昧)、田品萱(法印)、張雅雯(法空)、鄭秀美(法岫)", desc: "在走廊快速將 12 盤大眾燈 (共 144 盞) 翻亮。" },
         { id: "lamp_control", title: "控燈人員", assignee: "葉燈超(法燈)", desc: "開始傳燈時負責關閉室內明燈、開啟大門。" },
         { id: "lamp_tray_push", title: "遞燈托盤與推車", assignee: "曾雅蘭(傳昧)、田品萱(法印)、張雅雯(法空)、鄭秀美(法岫)", desc: "清淨前門推入燈車於西單櫃前，由西單一一遞托盤上呈給師父。" },
-        { id: "lamp_receiver", title: "學員長接燈傳燈", assignee: "12位學員長", desc: "東單排班上台接燈，捧回小組傳燈，最後捧1盞站在佛前 (中留空位) 帶唱。" },
+        { id: "lamp_receiver", title: "學員長接燈傳燈", assignee: "9位學員長", desc: "東單排班上台接燈，捧回小組傳燈，最後捧1盞站在佛前 (中留空位) 帶唱。" },
         { id: "lamp_choir_lead", title: "助唱引導", assignee: "賴怡芳(法倢)", desc: "手持無線麥克風，引導及協助大眾捧燈齊唱《獻給導師》。" },
         { id: "lamp_collect_left", title: "收剩餘燈具", assignee: "詹瑞貞(法持)、趙佳欣(法佳)", desc: "將剩下的燈收於 1 盤，放置在禪堂大門內左側黑色座墊上，待補滿摩尼寶珠燈板空缺。" }
       ],
@@ -357,7 +362,7 @@ window.CEREMONY_DATA = {
         "補燈與協助：排班人員需協助行動不便學員供燈，並在供燈結束後，使用備用燈將「摩尼寶珠板」上的 144 個空缺全部補滿。"
       ],
       roles: [
-        { id: "off_pull_hall", title: "拉班至禪堂(引導)", assignee: "賴素綿(法平)", desc: "帶領隊伍二路移壇，由清淨講堂走廊有序進入禪堂。" },
+        { id: "off_pull_hall", title: "拉班至禪堂(引導)", assignee: "邱黃秀枝(傳開)", desc: "帶領隊伍二路移壇，由清淨講堂走廊有序進入禪堂。" },
         { id: "off_pull_out", title: "拉班出位", assignee: "葉金鳳(法經)", desc: "負責在講堂出口及禪堂入口維持隊伍拉班間距與速度。" },
         { id: "off_cut_east", title: "東前切班定位", assignee: "鄭秀美(法岫)", desc: "於禪堂前半段東單位置協助學員切班與定位。" },
         { id: "off_cut_west", title: "西前切班定位", assignee: "張雅雯(法空)", desc: "於禪堂前半段西單位置協助學員切班與定位。" },
