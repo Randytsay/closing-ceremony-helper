@@ -1110,7 +1110,10 @@ window.CEREMONY_DATA = ${dataString};
           ? sheetRows.slice(1)
           : sheetRows;
           
-        // 將飛書數據覆蓋至 memory 中的 window.CEREMONY_DATA
+        // 蒐集飛書上所有非預設字樣的真實姓名，用以動態擴充前端名單庫
+        const sheetNames = new Set();
+        const ignoreList = ["XXX", "None", "", "學長團隊", "課務團隊", "全體義工團隊", "學員代表", "12位學員長", "各組學員長", "課務長"];
+        
         dataRows.forEach(row => {
           if (row && row.length >= 1) {
             const roleId = row[0] ? String(row[0]).trim() : "";
@@ -1119,6 +1122,16 @@ window.CEREMONY_DATA = ${dataString};
             let assignee = "XXX";
             if (row.length >= 3 && row[2] !== null && row[2] !== undefined) {
               assignee = String(row[2]).trim() || "XXX";
+            }
+            
+            // 拆分姓名並加進臨時 Set 中，排除忽略名單
+            if (assignee && assignee !== "XXX") {
+              const names = assignee.split(/[,、.\s]+/).map(n => n.trim()).filter(n => n.length > 0);
+              names.forEach(name => {
+                if (!ignoreList.includes(name)) {
+                  sheetNames.add(name);
+                }
+              });
             }
             
             data.stages.forEach(stage => {
@@ -1132,6 +1145,17 @@ window.CEREMONY_DATA = ${dataString};
             });
           }
         });
+
+        // 動態將新名字合併至前端的 volunteerPool 中
+        if (sheetNames.size > 0) {
+          const originalSize = volunteerPool.length;
+          const mergedSet = new Set([...volunteerPool, ...sheetNames]);
+          if (mergedSet.size !== originalSize) {
+            volunteerPool = Array.from(mergedSet).sort((a, b) => a.localeCompare(b, "zh-Hant"));
+            hasChanges = true; // 變更標記設為 true 以觸發 UI 重新渲染與下拉選單更新
+            console.log(`👥 [Sync] 動態名單庫已自動合併飛書新姓名！名單數由 ${originalSize} 增加至 ${volunteerPool.length}。`);
+          }
+        }
 
         if (showToast && statusGlow) {
           statusGlow.className = "sync-status-glow success";
