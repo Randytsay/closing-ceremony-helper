@@ -165,6 +165,8 @@ def main():
     app_secret = env.get("LARK_APP_SECRET")
     token = env.get("LARK_SPREADSHEET_TOKEN")
     sheet_range = env.get("LARK_SHEET_RANGE", "Sheet1!A1:C100")
+    if sheet_range and sheet_range.startswith("Sheet1"):
+        sheet_range = sheet_range.replace("Sheet1", "2168c9")
     
     if not token or "[請填入" in token:
         print("❌ [Error] 請在本地 .env 檔案中設定正確的 LARK_SPREADSHEET_TOKEN！")
