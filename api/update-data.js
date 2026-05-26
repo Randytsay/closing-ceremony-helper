@@ -111,7 +111,7 @@ export default async function handler(req, res) {
 
     // Feishu Sheet rows are 1-indexed, so rowNumber = index + 1
     const rowNumber = rowIndex + 1;
-    const targetCell = `${sheetId}!C${rowNumber}`; // e.g. "2168c9!C5"
+    const targetCell = `${sheetId}!C${rowNumber}:C${rowNumber}`; // e.g. "2168c9!C2:C2"
     
     // 3. Write the new assignee value to that specific cell (Column C)
     const writeRes = await makeRequest(
