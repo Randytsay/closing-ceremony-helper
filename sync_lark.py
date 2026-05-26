@@ -107,16 +107,20 @@ def update_data_js(sheet_rows):
     update_count = 0
 
     for row in data_rows:
-        if len(row) >= 3:
-            role_id = str(row[0]).strip()
-            role_title = str(row[1]).strip()
-            assignee = str(row[2]).strip()
+        if len(row) >= 1:
+            role_id = str(row[0]).strip() if row[0] is not None else ""
+            role_title = str(row[1]).strip() if len(row) >= 2 and row[1] is not None else ""
+            assignee = str(row[2]).strip() if len(row) >= 3 and row[2] is not None else "XXX"
+            
+            # Robust fallback for None or empty string cells
+            if not assignee or assignee == "None" or assignee == "":
+                assignee = "XXX"
             
             if role_id and assignee:
                 names = re.split(r'[,、.\s]', assignee)
                 for n in names:
                     trimmed = n.strip()
-                    if trimmed and trimmed not in ["XXX", "學長團隊", "課務團隊", "全體義工團隊", "學員代表", "12位學員長", "各組學員長", "課務長"]:
+                    if trimmed and trimmed not in ["XXX", "None", "學長團隊", "課務團隊", "全體義工團隊", "學員代表", "12位學員長", "各組學員長", "課務長"]:
                         unique_names.add(trimmed)
                 
                 pattern = r'(\{\s*id:\s*["\']' + re.escape(role_id) + r'["\'],[^{}]*assignee:\s*["\'])([^"\']*)(["\'])'

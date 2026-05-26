@@ -551,136 +551,84 @@ document.addEventListener("DOMContentLoaded", () => {
   // 生成 地圖 A：結業頒證 SVG
   function generateAwardsMapSvg() {
     const stageRoles = getRolesForMap("map_awards");
+    const awardsPositions = {
+      "award_hand_cert":      { x: 880, y: 100, align: "left"   },
+      "award_pull_line":      { x: 582, y: 400, align: "center" },
+      "award_guide_up":       { x: 770, y: 165, align: "left"   },
+      "award_guide_down":     { x: 490, y: 175, align: "right"  },
+      "award_cut_pos":        { x: 582, y: 70,  align: "center" },
+      "award_check_list":     { x: 360, y: 500, align: "right"  },
+      "award_corridor_guide": { x: 190, y: 380, align: "right"  },
+      "award_emcee":          { x: 890, y: 220, align: "left"   },
+      "award_audio":          { x: 750, y: 550, align: "right"  },
+      "award_photo":          { x: 582, y: 280, align: "center" },
+      "award_light":          { x: 360, y: 220, align: "right"  }
+    };
 
-    // 渲染東單 1-4 組（右側）、西單 5-9 組（左側）
-    // 參考實際桌次位置圖：東單=右=1~4組，西單=左=5~9組
-    let chairsHtml = "";
-
-    // 東單 1-4 組（右側，x=560）
-    for (let i = 1; i <= 4; i++) {
-      const y = 175 + (i - 1) * 52;
-      chairsHtml += `
-        <rect class="svg-chair" x="555" y="${y}" width="90" height="28" rx="4" />
-        <text class="svg-chair-label" x="600" y="${y + 17}">第 ${i} 組</text>
-      `;
-    }
-
-    // 西單 5-9 組（左側，x=255）
-    for (let i = 5; i <= 9; i++) {
-      const y = 175 + (i - 5) * 52;
-      chairsHtml += `
-        <rect class="svg-chair" x="255" y="${y}" width="90" height="28" rx="4" />
-        <text class="svg-chair-label" x="300" y="${y + 17}">第 ${i} 組</text>
-      `;
-    }
-
-    // 生成執事站點 + 標籤框（模仿原圖的callout box風格）
-    // 每個執事：圓點 + 連線 + 標籤框（含職稱和人名）
     let spotsHtml = "";
     stageRoles.forEach(roleObj => {
-      const pos = roleObj.position;
+      const pos = awardsPositions[roleObj.role.id];
       if (!pos) return;
       const isUnassigned = !roleObj.role.assignee || roleObj.role.assignee === "XXX";
-      const dotOpacity = isUnassigned ? "0.4" : "1";
+      const dotOpacity = isUnassigned ? "0.45" : "1";
       const assignee = isUnassigned ? "（待指派）" : roleObj.role.assignee;
-      const label = pos.label;
+      const label = roleObj.position ? roleObj.position.label : roleObj.role.title.substring(0, 6);
 
-      // 標籤框位置：偏移避免遮住圓點，依 align 決定方向
-      const bw = 90; // 框寬
-      const bh = 34; // 框高
-      let bx, by, lx1, ly1, lx2, ly2;
+      const bw = 170; // High visibility
+      const bh = 52;
+      let bx, by, lx2, ly2;
 
-      if (pos.callout) {
-        // 使用 data.js 中自訂的 callout 偏移
-        bx = pos.x + pos.callout.dx - bw / 2;
-        by = pos.y + pos.callout.dy - bh / 2;
-      } else if (pos.align === "right") {
-        bx = pos.x - bw - 22;
+      if (pos.align === "right") {
+        bx = pos.x - bw - 35;
         by = pos.y - bh / 2;
+        lx2 = bx + bw;
+        ly2 = pos.y;
       } else if (pos.align === "left") {
-        bx = pos.x + 22;
+        bx = pos.x + 35;
         by = pos.y - bh / 2;
+        lx2 = bx;
+        ly2 = pos.y;
       } else {
-        // center: 上方或下方
+        // center
         bx = pos.x - bw / 2;
-        by = pos.y - bh - 22;
+        if (pos.y < 400) {
+          by = pos.y + 35;
+          lx2 = pos.x;
+          ly2 = by;
+        } else {
+          by = pos.y - bh - 35;
+          lx2 = pos.x;
+          ly2 = by + bh;
+        }
       }
-
-      // 連線端點
-      lx1 = pos.x; ly1 = pos.y;
-      lx2 = bx + bw / 2; ly2 = by + bh;
-      if (pos.align === "right") { lx2 = bx + bw; ly2 = by + bh / 2; }
-      if (pos.align === "left") { lx2 = bx; ly2 = by + bh / 2; }
 
       spotsHtml += `
         <g class="svg-officer-spot" data-role-id="${roleObj.role.id}" style="cursor: pointer;">
-          <!-- 連線 -->
-          <line x1="${lx1}" y1="${ly1}" x2="${lx2}" y2="${ly2}"
-                stroke="var(--color-gold)" stroke-width="1.5" stroke-dasharray="3,2" opacity="${dotOpacity}" />
-          <!-- 圓點 -->
-          <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="13" style="opacity:${dotOpacity};" />
-          <text class="svg-officer-label" x="${pos.x}" y="${pos.y + 1}" style="font-size:10px;">執</text>
-          <!-- 標籤框 -->
-          <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="5"
-                fill="var(--bg-secondary)" stroke="var(--color-gold)" stroke-width="1.2"
-                opacity="${dotOpacity}" />
-          <text x="${bx + bw/2}" y="${by + 13}" class="svg-chair-label"
-                style="font-weight:700; font-size:11px; fill:var(--text-primary);">${label}</text>
-          <text x="${bx + bw/2}" y="${by + 27}" class="svg-chair-label"
-                style="font-size:10px; fill:var(--color-gold); font-weight:600;"
+          <!-- Connecting Line -->
+          <line x1="${pos.x}" y1="${pos.y}" x2="${lx2}" y2="${ly2}"
+                stroke="var(--color-gold)" stroke-width="2.5" stroke-dasharray="4,3" opacity="${dotOpacity}" />
+          <!-- Officer Spot (Circle) -->
+          <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="22" style="opacity:${dotOpacity}; fill: var(--bg-primary); stroke: var(--color-gold); stroke-width: 3.5;" />
+          <text class="svg-officer-label" x="${pos.x}" y="${pos.y}" style="font-size: 16px; font-weight: 900; fill: #ffffff; text-anchor: middle; dominant-baseline: central; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));">執</text>
+          <!-- Callout Box -->
+          <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="8"
+                fill="var(--bg-secondary)" stroke="var(--color-gold)" stroke-width="2.2"
+                opacity="${dotOpacity}" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));" />
+          <text x="${bx + bw/2}" y="${by + 20}" class="svg-chair-label"
+                style="font-weight: 700; font-size: 15px; fill: var(--text-primary); text-anchor: middle;">${label}</text>
+          <text x="${bx + bw/2}" y="${by + 40}" class="svg-chair-label"
+                style="font-size: 14px; fill: var(--color-gold); font-weight: 700; text-anchor: middle;"
                 >${assignee.length > 10 ? assignee.substring(0,10)+"…" : assignee}</text>
         </g>
       `;
     });
 
     return `
-      <svg class="svg-element" viewBox="0 0 900 560" width="100%" height="100%">
-        <!-- 講堂背景外牆 -->
-        <rect class="svg-hall-bg" x="0" y="0" width="900" height="560" />
-        <rect class="svg-wall" x="60" y="30" width="780" height="500" rx="12" />
-
-        <!-- 側邊標示 -->
-        <text x="24" y="310" class="svg-chair-label"
-              style="transform: rotate(-90deg); transform-origin: 24px 310px; font-size:10px;">西單前門走廊</text>
-        <text x="876" y="310" class="svg-chair-label"
-              style="transform: rotate(90deg); transform-origin: 876px 310px; font-size:10px;">講堂後門走廊</text>
-
-        <!-- 佛龕 + 台上區（上方紅色台區） -->
-        <rect class="svg-stage" x="150" y="30" width="600" height="90" rx="4" />
-        <text x="450" y="58" class="svg-label-text" style="font-size:13px; fill:var(--color-gold);">佛 龕</text>
-
-        <!-- 住持講桌 -->
-        <rect class="svg-lectern" x="390" y="90" width="120" height="28" rx="4" fill="#8b0000" stroke="var(--color-gold)" stroke-width="1.5"/>
-        <text x="450" y="108" class="svg-officer-label" style="fill:white; font-size:10px;">住持講桌</text>
-
-        <!-- 大眾法師座位（左右各2位） -->
-        <rect class="svg-chair" x="270" y="92" width="22" height="22" rx="3" />
-        <text x="281" y="106" class="svg-chair-label" style="font-size:8px;">師</text>
-        <rect class="svg-chair" x="298" y="92" width="22" height="22" rx="3" />
-        <text x="309" y="106" class="svg-chair-label" style="font-size:8px;">師</text>
-        <rect class="svg-chair" x="326" y="92" width="22" height="22" rx="3" />
-        <text x="337" y="106" class="svg-chair-label" style="font-size:8px;">師</text>
-
-        <rect class="svg-chair" x="580" y="92" width="22" height="22" rx="3" />
-        <text x="591" y="106" class="svg-chair-label" style="font-size:8px;">師</text>
-        <rect class="svg-chair" x="608" y="92" width="22" height="22" rx="3" />
-        <text x="619" y="106" class="svg-chair-label" style="font-size:8px;">師</text>
-
-        <!-- 中央走道 -->
-        <line x1="450" y1="122" x2="450" y2="520"
-              stroke="var(--border-color)" stroke-dasharray="5,4" stroke-width="1.5" />
-        <text x="450" y="340" class="svg-label-text" style="font-size:12px; opacity:0.4;">中 央 走 道</text>
-
-        <!-- 東西單大標記 -->
-        <text x="300" y="350" class="svg-label-text" style="font-size:22px; opacity:0.1;">西 單</text>
-        <text x="576" y="350" class="svg-label-text" style="font-size:22px; opacity:0.1;">東 單</text>
-        <text x="300" y="380" class="svg-label-text" style="font-size:14px; opacity:0.18;">第 5～9 組</text>
-        <text x="580" y="380" class="svg-label-text" style="font-size:14px; opacity:0.18;">第 1～4 組</text>
-
-        <!-- 座椅區 -->
-        ${chairsHtml}
-
-        <!-- 執事站點 + 標籤 -->
+      <svg class="svg-element vertical" viewBox="0 0 1165 1404" width="100%" height="100%">
+        <!-- Background Hand-drawn Image -->
+        <image href="清淨.jpg" x="0" y="0" width="1165" height="1404" />
+        
+        <!-- Overlaid Spots -->
         ${spotsHtml}
       </svg>
     `;
@@ -689,100 +637,83 @@ document.addEventListener("DOMContentLoaded", () => {
   // 生成 地圖 B：傳燈與發願 SVG
   function generateLampsMapSvg() {
     const stageRoles = getRolesForMap("map_lamps");
+    const lampsPositions = {
+      "lamp_flip":            { x: 190, y: 150, align: "right"  },
+      "lamp_control":         { x: 360, y: 220, align: "right"  },
+      "lamp_tray_push":       { x: 400, y: 150, align: "right"  },
+      "lamp_receiver":        { x: 582, y: 140, align: "center" },
+      "lamp_choir_lead":      { x: 770, y: 165, align: "left"   },
+      "lamp_collect_left":    { x: 190, y: 380, align: "right"  },
+      "vow_stand":            { x: 700, y: 70,  align: "left"   },
+      "vow_monk_lamp":        { x: 880, y: 100, align: "left"   },
+      "vow_abbot_lamp":       { x: 582, y: 70,  align: "center" },
+      "vow_mic":              { x: 890, y: 220, align: "left"   }
+    };
 
-    let baseHtml = "";
-
-    // 西單 5-9（左，x=255）座椅淡化
-    for (let i = 5; i <= 9; i++) {
-      const y = 175 + (i - 5) * 52;
-      baseHtml += `<rect class="svg-chair" x="255" y="${y}" width="90" height="28" rx="4" style="opacity:0.3;" />`;
-    }
-    // 東單 1-4（右，x=555）座椅淡化
-    for (let i = 1; i <= 4; i++) {
-      const y = 175 + (i - 1) * 52;
-      baseHtml += `<rect class="svg-chair" x="555" y="${y}" width="90" height="28" rx="4" style="opacity:0.3;" />`;
-    }
-
-    // 學員長佛前弧形排班
-    let choirHtml = "";
-    const arcPoints = [
-      { x: 275, y: 138 }, { x: 305, y: 140 }, { x: 335, y: 142 },
-      { x: 365, y: 143 }, { x: 395, y: 144 }, { x: 420, y: 145 },
-      { x: 480, y: 145 }, { x: 505, y: 144 }, { x: 535, y: 143 },
-      { x: 565, y: 142 }, { x: 595, y: 140 }, { x: 625, y: 138 }
-    ];
-    arcPoints.forEach(pt => {
-      choirHtml += `
-        <circle cx="${pt.x}" cy="${pt.y}" r="6" fill="var(--color-gold)" style="filter:drop-shadow(0 0 4px var(--color-gold));" />
-        <circle cx="${pt.x}" cy="${pt.y}" r="2" fill="white" />
-      `;
-    });
-
-    const arrowPath = `
-      <path d="M 450,145 L 450,500" fill="none" stroke="var(--color-gold)" stroke-width="2" stroke-dasharray="6,5" style="opacity:0.7;" />
-      <path d="M 350,145 L 350,125 L 450,125" fill="none" stroke="var(--color-gold)" stroke-width="1.5" stroke-dasharray="4,4" />
-      <path d="M 550,145 L 550,125 L 450,125" fill="none" stroke="var(--color-gold)" stroke-width="1.5" stroke-dasharray="4,4" />
-      <polygon points="450,505 444,495 456,495" fill="var(--color-gold)" />
-    `;
-
-    // 執事站點（標籤框式）
     let spotsHtml = "";
     stageRoles.forEach(roleObj => {
-      const pos = roleObj.position;
+      const pos = lampsPositions[roleObj.role.id];
       if (!pos) return;
       const isUnassigned = !roleObj.role.assignee || roleObj.role.assignee === "XXX";
-      const dotOpacity = isUnassigned ? "0.4" : "1";
+      const dotOpacity = isUnassigned ? "0.45" : "1";
       const assignee = isUnassigned ? "（待指派）" : roleObj.role.assignee;
-      const bw = 90, bh = 34;
+      const label = roleObj.position ? roleObj.position.label : roleObj.role.title.substring(0, 6);
+
+      const bw = 170;
+      const bh = 52;
       let bx, by, lx2, ly2;
-      if (pos.align === "right") { bx = pos.x - bw - 20; by = pos.y - bh/2; lx2 = bx + bw; ly2 = by + bh/2; }
-      else if (pos.align === "left") { bx = pos.x + 20; by = pos.y - bh/2; lx2 = bx; ly2 = by + bh/2; }
-      else { bx = pos.x - bw/2; by = pos.y - bh - 20; lx2 = bx + bw/2; ly2 = by + bh; }
+
+      if (pos.align === "right") {
+        bx = pos.x - bw - 35;
+        by = pos.y - bh / 2;
+        lx2 = bx + bw;
+        ly2 = pos.y;
+      } else if (pos.align === "left") {
+        bx = pos.x + 35;
+        by = pos.y - bh / 2;
+        lx2 = bx;
+        ly2 = pos.y;
+      } else {
+        // center
+        bx = pos.x - bw / 2;
+        if (pos.y < 400) {
+          by = pos.y + 35;
+          lx2 = pos.x;
+          ly2 = by;
+        } else {
+          by = pos.y - bh - 35;
+          lx2 = pos.x;
+          ly2 = by + bh;
+        }
+      }
 
       spotsHtml += `
-        <g class="svg-officer-spot" data-role-id="${roleObj.role.id}" style="cursor:pointer;">
+        <g class="svg-officer-spot" data-role-id="${roleObj.role.id}" style="cursor: pointer;">
+          <!-- Connecting Line -->
           <line x1="${pos.x}" y1="${pos.y}" x2="${lx2}" y2="${ly2}"
-                stroke="var(--color-gold)" stroke-width="1.5" stroke-dasharray="3,2" opacity="${dotOpacity}" />
-          <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="13" style="opacity:${dotOpacity};" />
-          <text class="svg-officer-label" x="${pos.x}" y="${pos.y+1}" style="font-size:10px;">執</text>
-          <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="5"
-                fill="var(--bg-secondary)" stroke="var(--color-gold)" stroke-width="1.2" opacity="${dotOpacity}" />
-          <text x="${bx+bw/2}" y="${by+13}" class="svg-chair-label"
-                style="font-weight:700; font-size:11px; fill:var(--text-primary);">${pos.label}</text>
-          <text x="${bx+bw/2}" y="${by+27}" class="svg-chair-label"
-                style="font-size:10px; fill:var(--color-gold); font-weight:600;"
-                >${assignee.length>10?assignee.substring(0,10)+"…":assignee}</text>
+                stroke="var(--color-gold)" stroke-width="2.5" stroke-dasharray="4,3" opacity="${dotOpacity}" />
+          <!-- Officer Spot (Circle) -->
+          <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="22" style="opacity:${dotOpacity}; fill: var(--bg-primary); stroke: var(--color-gold); stroke-width: 3.5;" />
+          <text class="svg-officer-label" x="${pos.x}" y="${pos.y}" style="font-size: 16px; font-weight: 900; fill: #ffffff; text-anchor: middle; dominant-baseline: central; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));">執</text>
+          <!-- Callout Box -->
+          <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="8"
+                fill="var(--bg-secondary)" stroke="var(--color-gold)" stroke-width="2.2"
+                opacity="${dotOpacity}" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));" />
+          <text x="${bx + bw/2}" y="${by + 20}" class="svg-chair-label"
+                style="font-weight: 700; font-size: 15px; fill: var(--text-primary); text-anchor: middle;">${label}</text>
+          <text x="${bx + bw/2}" y="${by + 40}" class="svg-chair-label"
+                style="font-size: 14px; fill: var(--color-gold); font-weight: 700; text-anchor: middle;"
+                >${assignee.length > 10 ? assignee.substring(0,10)+"…" : assignee}</text>
         </g>
       `;
     });
 
     return `
-      <svg class="svg-element" viewBox="0 0 900 560" width="100%" height="100%">
-        <rect class="svg-hall-bg" x="0" y="0" width="900" height="560" />
-        <rect class="svg-wall" x="60" y="30" width="780" height="500" rx="12" />
-
-        <text x="24" y="310" class="svg-chair-label"
-              style="transform:rotate(-90deg); transform-origin:24px 310px; font-size:10px;">西單前門走廊</text>
-        <text x="876" y="310" class="svg-chair-label"
-              style="transform:rotate(90deg); transform-origin:876px 310px; font-size:10px;">講堂後門走廊</text>
-
-        <rect class="svg-stage" x="150" y="30" width="600" height="90" rx="4" />
-        <text x="450" y="58" class="svg-label-text" style="font-size:13px; fill:var(--color-gold);">佛 龕</text>
-        <rect class="svg-lectern" x="390" y="90" width="120" height="28" rx="4" fill="#8b0000" stroke="var(--color-gold)" stroke-width="1.5"/>
-        <text x="450" y="108" class="svg-officer-label" style="fill:white; font-size:10px;">住持講桌</text>
-
-        <!-- 學員長佛前捧燈排班 -->
-        ${choirHtml}
-        <text x="450" y="165" class="svg-chair-label" style="font-size:9px; fill:var(--color-gold);">─ 學員長捧燈佛前排班（中留空位）─</text>
-
-        <!-- 中央走道傳燈動線 -->
-        ${arrowPath}
-        <text x="450" y="350" class="svg-label-text" style="font-size:11px; opacity:0.35;">中 央 走 道</text>
-
-        <text x="300" y="340" class="svg-label-text" style="font-size:18px; opacity:0.1;">西 單</text>
-        <text x="576" y="340" class="svg-label-text" style="font-size:18px; opacity:0.1;">東 單</text>
-
-        ${baseHtml}
+      <svg class="svg-element vertical" viewBox="0 0 1165 1404" width="100%" height="100%">
+        <!-- Background Hand-drawn Image -->
+        <image href="清淨.jpg" x="0" y="0" width="1165" height="1404" />
+        
+        <!-- Overlaid Spots -->
         ${spotsHtml}
       </svg>
     `;
@@ -791,150 +722,86 @@ document.addEventListener("DOMContentLoaded", () => {
   // 生成 地圖 C：禪堂供燈供僧 SVG（直式，仿原 Word 圖比例）
   function generateOfferingMapSvg() {
     const stageRoles = getRolesForMap("map_offering");
-
-    // 摩尼寶珠燈板（12列×12行共144盞，排列在佛龕前方）
-    let maniLampsHtml = "";
-    for (let row = 0; row < 12; row++) {
-      for (let col = 0; col < 12; col++) {
-        const cx = 155 + col * 35;
-        const cy = 330 + row * 35;
-        maniLampsHtml += `<circle cx="${cx}" cy="${cy}" r="10"
-          fill="rgba(212,175,55,0.08)" stroke="var(--color-gold)" stroke-width="0.5"
-          style="opacity:0.5;" />`;
-      }
-    }
-
-    // 水晶紅包盤（東西兩側各1個）
-    const platesHtml = `
-      <ellipse cx="95"  cy="180" rx="28" ry="18" fill="rgba(176,224,230,0.15)" stroke="#87ceeb" stroke-width="1.5" />
-      <text x="95"  y="184" class="svg-chair-label" style="font-size:9px; fill:#87ceeb;">水晶盤(西)</text>
-      <ellipse cx="505" cy="180" rx="28" ry="18" fill="rgba(176,224,230,0.15)" stroke="#87ceeb" stroke-width="1.5" />
-      <text x="505" y="184" class="svg-chair-label" style="font-size:9px; fill:#87ceeb;">水晶盤(東)</text>
-    `;
-
-    // 圓柱（前後各2根）
-    const pillarsHtml = `
-      <circle cx="95"  cy="310" r="12" fill="var(--bg-tertiary)" stroke="var(--border-color)" stroke-width="1.5" />
-      <text x="95"  y="314" class="svg-chair-label" style="font-size:8px;">柱</text>
-      <circle cx="505" cy="310" r="12" fill="var(--bg-tertiary)" stroke="var(--border-color)" stroke-width="1.5" />
-      <text x="505" y="314" class="svg-chair-label" style="font-size:8px;">柱</text>
-      <circle cx="95"  cy="735" r="12" fill="var(--bg-tertiary)" stroke="var(--border-color)" stroke-width="1.5" />
-      <text x="95"  y="739" class="svg-chair-label" style="font-size:8px;">柱</text>
-      <circle cx="505" cy="735" r="12" fill="var(--bg-tertiary)" stroke="var(--border-color)" stroke-width="1.5" />
-      <text x="505" y="739" class="svg-chair-label" style="font-size:8px;">柱</text>
-    `;
-
-    // 供奉動線（O型環）
-    const flowPath = `
-      <path d="M 490,770 L 490,310 A 195,195 0 0,0 110,310 L 110,770"
-            fill="none" stroke="var(--color-gold)" stroke-width="2" stroke-dasharray="4,4" opacity="0.6"/>
-      <polygon points="490,500 484,490 496,490" fill="var(--color-gold)" style="transform:rotate(180deg); transform-origin:490px 500px;" />
-      <polygon points="110,600 104,590 116,590" fill="var(--color-gold)" />
-    `;
-
-    // 執事站點（標籤框式）
-    let spotsHtml = "";
-    // 重新定義供燈地圖的positions座標（直式佈局，viewBox 600×900）
-    // 直式佈局中的位置重新對應
     const offeringPositions = {
-      "off_pull_hall":      { x: 300, y: 870, align: "center" },
-      "off_pull_out":       { x: 300, y: 790, align: "center" },
-      "off_cut_east":       { x: 480, y: 420, align: "left"   },
-      "off_cut_west":       { x: 120, y: 420, align: "right"  },
-      "off_guide_east_post":{ x: 480, y: 700, align: "left"   },
-      "off_guide_west_post":{ x: 120, y: 700, align: "right"  },
-      "off_demo_east":      { x: 490, y: 220, align: "left"   },
-      "off_demo_west":      { x: 110, y: 220, align: "right"  },
-      "off_refill_lamp":    { x: 300, y: 490, align: "center" },
-      "off_collect_redbag": { x: 450, y: 200, align: "right"  },
-      "off_control_light":  { x: 35,  y: 780, align: "left"   },
-      "off_chairs":         { x: 35,  y: 200, align: "left"   },
-      "off_card_hold":      { x: 300, y: 340, align: "center" },
+      "off_pull_hall":      { x: 542, y: 480, align: "center" },
+      "off_pull_out":       { x: 542, y: 550, align: "center" },
+      "off_cut_east":       { x: 640, y: 420, align: "left"   },
+      "off_cut_west":       { x: 440, y: 420, align: "right"  },
+      "off_guide_east_post":{ x: 840, y: 640, align: "left"   },
+      "off_guide_west_post":{ x: 240, y: 640, align: "right"  },
+      "off_demo_east":      { x: 730, y: 180, align: "left"   },
+      "off_demo_west":      { x: 350, y: 180, align: "right"  },
+      "off_refill_lamp":    { x: 542, y: 350, align: "center" },
+      "off_collect_redbag": { x: 730, y: 230, align: "left"   },
+      "off_control_light":  { x: 940, y: 540, align: "left"   },
+      "off_chairs":         { x: 140, y: 145, align: "right"  },
+      "off_card_hold":      { x: 542, y: 280, align: "center" },
     };
 
+    let spotsHtml = "";
     stageRoles.forEach(roleObj => {
       const pos = offeringPositions[roleObj.role.id];
       if (!pos) return;
       const isUnassigned = !roleObj.role.assignee || roleObj.role.assignee === "XXX";
-      const dotOpacity = isUnassigned ? "0.4" : "1";
+      const dotOpacity = isUnassigned ? "0.45" : "1";
       const assignee = isUnassigned ? "（待指派）" : roleObj.role.assignee;
-      const label = roleObj.position ? roleObj.position.label : roleObj.role.title.substring(0,6);
-      const bw = 88, bh = 34;
+      const label = roleObj.position ? roleObj.position.label : roleObj.role.title.substring(0, 6);
+
+      const bw = 170;
+      const bh = 52;
       let bx, by, lx2, ly2;
-      if (pos.align === "right") { bx = pos.x - bw - 16; by = pos.y - bh/2; lx2 = bx + bw; ly2 = by + bh/2; }
-      else if (pos.align === "left") { bx = pos.x + 16; by = pos.y - bh/2; lx2 = bx; ly2 = by + bh/2; }
-      else { bx = pos.x - bw/2; by = pos.y - bh - 16; lx2 = bx + bw/2; ly2 = by + bh; }
+
+      if (pos.align === "right") {
+        bx = pos.x - bw - 35;
+        by = pos.y - bh / 2;
+        lx2 = bx + bw;
+        ly2 = pos.y;
+      } else if (pos.align === "left") {
+        bx = pos.x + 35;
+        by = pos.y - bh / 2;
+        lx2 = bx;
+        ly2 = pos.y;
+      } else {
+        // center
+        bx = pos.x - bw / 2;
+        if (pos.y < 400) {
+          by = pos.y + 35;
+          lx2 = pos.x;
+          ly2 = by;
+        } else {
+          by = pos.y - bh - 35;
+          lx2 = pos.x;
+          ly2 = by + bh;
+        }
+      }
 
       spotsHtml += `
-        <g class="svg-officer-spot" data-role-id="${roleObj.role.id}" style="cursor:pointer;">
+        <g class="svg-officer-spot" data-role-id="${roleObj.role.id}" style="cursor: pointer;">
+          <!-- Connecting Line -->
           <line x1="${pos.x}" y1="${pos.y}" x2="${lx2}" y2="${ly2}"
-                stroke="var(--color-gold)" stroke-width="1.5" stroke-dasharray="3,2" opacity="${dotOpacity}" />
-          <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="13" style="opacity:${dotOpacity};" />
-          <text class="svg-officer-label" x="${pos.x}" y="${pos.y+1}" style="font-size:10px;">執</text>
-          <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="5"
-                fill="var(--bg-secondary)" stroke="var(--color-gold)" stroke-width="1.2" opacity="${dotOpacity}" />
-          <text x="${bx+bw/2}" y="${by+13}" class="svg-chair-label"
-                style="font-weight:700; font-size:11px; fill:var(--text-primary);">${label}</text>
-          <text x="${bx+bw/2}" y="${by+27}" class="svg-chair-label"
-                style="font-size:10px; fill:var(--color-gold); font-weight:600;"
-                >${assignee.length>10?assignee.substring(0,10)+"…":assignee}</text>
+                stroke="var(--color-gold)" stroke-width="2.5" stroke-dasharray="4,3" opacity="${dotOpacity}" />
+          <!-- Officer Spot (Circle) -->
+          <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="22" style="opacity:${dotOpacity}; fill: var(--bg-primary); stroke: var(--color-gold); stroke-width: 3.5;" />
+          <text class="svg-officer-label" x="${pos.x}" y="${pos.y}" style="font-size: 16px; font-weight: 900; fill: #ffffff; text-anchor: middle; dominant-baseline: central; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));">執</text>
+          <!-- Callout Box -->
+          <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="8"
+                fill="var(--bg-secondary)" stroke="var(--color-gold)" stroke-width="2.2"
+                opacity="${dotOpacity}" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));" />
+          <text x="${bx + bw/2}" y="${by + 20}" class="svg-chair-label"
+                style="font-weight: 700; font-size: 15px; fill: var(--text-primary); text-anchor: middle;">${label}</text>
+          <text x="${bx + bw/2}" y="${by + 40}" class="svg-chair-label"
+                style="font-size: 14px; fill: var(--color-gold); font-weight: 700; text-anchor: middle;"
+                >${assignee.length > 10 ? assignee.substring(0,10)+"…" : assignee}</text>
         </g>
       `;
     });
 
-    // viewBox 使用 600×920（直式，仿 Word 圖比例）
     return `
-      <svg class="svg-element vertical" viewBox="0 0 600 920" width="100%" height="100%">
-        <!-- 禪堂牆體 -->
-        <rect class="svg-hall-bg" x="0" y="0" width="600" height="920" />
-        <rect class="svg-wall" x="40" y="30" width="520" height="860" rx="12" />
-
-        <!-- 大門入口（下方） -->
-        <rect x="220" y="870" width="160" height="18" rx="4" fill="var(--bg-tertiary)" stroke="var(--border-color)" stroke-width="1" />
-        <text x="300" y="883" class="svg-chair-label" style="font-size:11px;">禪堂大門入口</text>
-
-        <!-- 佛龕（上方） -->
-        <rect class="svg-stage" x="100" y="30" width="400" height="80" rx="4" />
-        <text x="300" y="60" class="svg-label-text" style="font-size:15px; fill:var(--color-gold); font-weight:bold;">大雄寶殿 佛龕</text>
-
-        <!-- 住持座椅（獅子座） -->
-        <rect class="svg-lectern" x="265" y="118" width="70" height="40" rx="4"
-              fill="#8b0000" stroke="var(--color-gold)" stroke-width="1.5"/>
-        <text x="300" y="142" class="svg-officer-label" style="fill:white; font-size:10px;">住持座</text>
-
-        <!-- 大眾法師座位 -->
-        <rect class="svg-chair" x="170" y="120" width="26" height="26" rx="3" />
-        <text x="183" y="136" class="svg-chair-label" style="font-size:8px;">師</text>
-        <rect class="svg-chair" x="202" y="120" width="26" height="26" rx="3" />
-        <text x="215" y="136" class="svg-chair-label" style="font-size:8px;">師</text>
-        <rect class="svg-chair" x="234" y="120" width="26" height="26" rx="3" />
-        <text x="247" y="136" class="svg-chair-label" style="font-size:8px;">師</text>
-        <rect class="svg-chair" x="340" y="120" width="26" height="26" rx="3" />
-        <text x="353" y="136" class="svg-chair-label" style="font-size:8px;">師</text>
-        <rect class="svg-chair" x="372" y="120" width="26" height="26" rx="3" />
-        <text x="385" y="136" class="svg-chair-label" style="font-size:8px;">師</text>
-
-        <!-- 水晶紅包盤 -->
-        ${platesHtml}
-
-        <!-- 摩尼寶珠燈板 -->
-        ${maniLampsHtml}
-        <text x="300" y="752" class="svg-chair-label"
-              style="fill:var(--color-gold); font-weight:bold; font-size:11px;">摩尼寶珠燈板 (144盞心燈)</text>
-
-        <!-- 圓柱 -->
-        ${pillarsHtml}
-
-        <!-- 供奉動線 -->
-        ${flowPath}
-        <text x="490" y="540" class="svg-chair-label"
-              style="fill:var(--color-gold); font-weight:bold; font-size:9px;
-                     transform:rotate(90deg); transform-origin:490px 540px;">東單進場↓</text>
-        <text x="110" y="540" class="svg-chair-label"
-              style="fill:var(--color-gold); font-weight:bold; font-size:9px;
-                     transform:rotate(-90deg); transform-origin:110px 540px;">西單歸位↑</text>
-
-        <!-- 執事站位 -->
+      <svg class="svg-element vertical" viewBox="0 0 1085 1508" width="100%" height="100%">
+        <!-- Background Hand-drawn Image -->
+        <image href="禪堂.jpg" x="0" y="0" width="1085" height="1508" />
+        
+        <!-- Overlaid Spots -->
         ${spotsHtml}
       </svg>
     `;
@@ -1390,9 +1257,14 @@ window.CEREMONY_DATA = ${dataString};
           
         // 將飛書數據覆蓋至 memory 中的 window.CEREMONY_DATA
         dataRows.forEach(row => {
-          if (row && row.length >= 3) {
-            const roleId = row[0].trim();
-            const assignee = row[2].trim();
+          if (row && row.length >= 1) {
+            const roleId = row[0] ? String(row[0]).trim() : "";
+            if (!roleId) return;
+            
+            let assignee = "XXX";
+            if (row.length >= 3 && row[2] !== null && row[2] !== undefined) {
+              assignee = String(row[2]).trim() || "XXX";
+            }
             
             data.stages.forEach(stage => {
               const r = stage.roles.find(x => x.id === roleId);
