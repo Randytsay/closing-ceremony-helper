@@ -911,11 +911,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetBtn = document.getElementById("btn-admin-reset");
   const editorStagesContainer = document.getElementById("editor-stages-container");
 
+  let adminModuleInitialized = false;
+
   // 初始化 Admin 模組
   function initAdminModule() {
     if (!volunteerPoolInput || !editorStagesContainer) return;
+    
     // 1. 初始化名單庫文字
     volunteerPoolInput.value = volunteerPool.join("\n");
+    
+    if (adminModuleInitialized) {
+      renderEditorList();
+      return;
+    }
     
     // 2. 綁定更新名單庫按鈕
     applyPoolBtn.addEventListener("click", () => {
@@ -955,6 +963,7 @@ document.addEventListener("DOMContentLoaded", () => {
       exportDataJs();
     });
 
+    adminModuleInitialized = true;
     renderEditorList();
   }
 
@@ -1064,8 +1073,56 @@ document.addEventListener("DOMContentLoaded", () => {
         renderTimeline();
         updateDatalist();
         renderMasterGrid();
+        
+        // 即時雙向同步：寫回飛書雲端試算表
+        syncWithFeishuCloud(roleId, newAssignee);
       }
     }
+  }
+
+  // 雙向同步：寫回飛書雲端試算表 (前端發送 Vercel Serverless Function 呼叫)
+  function syncWithFeishuCloud(roleId, assignee) {
+    // 移除舊的狀態提示
+    const oldGlow = document.querySelector(".sync-status-glow");
+    if (oldGlow) oldGlow.remove();
+
+    const statusGlow = document.createElement("div");
+    statusGlow.className = "sync-status-glow";
+    statusGlow.innerHTML = `<span>⏳ 正在同步飛書雲端...</span>`;
+    document.body.appendChild(statusGlow);
+
+    fetch('/api/update-data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ roleId, assignee })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("HTTP error " + res.status);
+      return res.json();
+    })
+    .then(result => {
+      if (result.code === 0) {
+        statusGlow.className = "sync-status-glow success";
+        statusGlow.innerHTML = `<span>✅ 飛書同步成功！</span>`;
+      } else {
+        statusGlow.className = "sync-status-glow error";
+        statusGlow.innerHTML = `<span>❌ 飛書同步失敗: ${result.msg}</span>`;
+      }
+      setTimeout(() => {
+        statusGlow.style.opacity = 0;
+        setTimeout(() => statusGlow.remove(), 400);
+      }, 2000);
+    })
+    .catch(err => {
+      statusGlow.className = "sync-status-glow error";
+      statusGlow.innerHTML = `<span>⚠️ 飛書離線 (僅儲存於網頁)</span>`;
+      setTimeout(() => {
+        statusGlow.style.opacity = 0;
+        setTimeout(() => statusGlow.remove(), 400);
+      }, 2000);
+    });
   }
 
   // 匯出 data.js 檔案下載
@@ -1108,12 +1165,126 @@ window.CEREMONY_DATA = ${dataString};
     });
   }
 
-  function bootstrap() {
-    renderTimeline();
-    updateDatalist();
-    renderMasterGrid();
-    renderActiveMap();
-    initAdminModule();
+  // 全域同步狀態管理
+  let isSyncing = false;
+
+  async function syncRosterData(options = {}) {
+    if (isSyncing) return;
+    isSyncing = true;
+
+    const { showToast = false, isManual = false } = options;
+
+    // 獲取同步按鈕與圖示
+    const syncBtn = document.getElementById("cloud-sync");
+    if (syncBtn) {
+      syncBtn.classList.add("spinning");
+      syncBtn.disabled = true;
+    }
+
+    let statusGlow = null;
+    if (showToast) {
+      // 移除舊的狀態提示
+      const oldGlow = document.querySelector(".sync-status-glow");
+      if (oldGlow) oldGlow.remove();
+
+      statusGlow = document.createElement("div");
+      statusGlow.className = "sync-status-glow";
+      statusGlow.innerHTML = `<span>⏳ 正在同步飛書雲端...</span>`;
+      document.body.appendChild(statusGlow);
+    }
+
+    console.log("📡 正在向飛書雲端同步最新班表...");
+
+    try {
+      const response = await fetch('/api/get-data');
+      const result = await response.json();
+      if (result.code === 0 && result.values && result.values.length > 0) {
+        console.log("📡 [Success] 順利從飛書獲取即時排班數據！");
+        
+        const sheetRows = result.values;
+        // 表頭過濾：排除第一行如果是 "角色 ID" 或 "角色ID" 的標題行
+        const dataRows = sheetRows[0] && (String(sheetRows[0][0]).includes("角色") || String(sheetRows[0][0]).includes("ID"))
+          ? sheetRows.slice(1)
+          : sheetRows;
+          
+        let hasChanges = false;
+
+        // 將飛書數據覆蓋至 memory 中的 window.CEREMONY_DATA
+        dataRows.forEach(row => {
+          if (row && row.length >= 3) {
+            const roleId = row[0].trim();
+            const assignee = row[2].trim();
+            
+            data.stages.forEach(stage => {
+              const r = stage.roles.find(x => x.id === roleId);
+              if (r) {
+                if (r.assignee !== assignee) {
+                  r.assignee = assignee;
+                  hasChanges = true;
+                }
+              }
+            });
+          }
+        });
+
+        // 重新渲染 UI 畫面
+        renderTimeline();
+        updateDatalist();
+        renderMasterGrid();
+        renderActiveMap();
+        initAdminModule();
+
+        if (showToast && statusGlow) {
+          statusGlow.className = "sync-status-glow success";
+          statusGlow.innerHTML = `<span>✅ 飛書雲端班表同步成功！</span>`;
+          setTimeout(() => {
+            statusGlow.style.opacity = 0;
+            setTimeout(() => statusGlow.remove(), 400);
+          }, 2000);
+        }
+      } else {
+        throw new Error(result.msg || "飛書返回錯誤代碼");
+      }
+    } catch (e) {
+      console.log("ℹ️ [Offline/Fallback] 無法從 API 取得即時數據，採用本地/現有班表：", e.message);
+      if (showToast && statusGlow) {
+        statusGlow.className = "sync-status-glow error";
+        statusGlow.innerHTML = `<span>❌ 同步失敗: ${e.message}</span>`;
+        setTimeout(() => {
+          statusGlow.style.opacity = 0;
+          setTimeout(() => statusGlow.remove(), 400);
+        }, 2000);
+      }
+    } finally {
+      isSyncing = false;
+      if (syncBtn) {
+        syncBtn.classList.remove("spinning");
+        syncBtn.disabled = false;
+      }
+    }
+  }
+
+  async function bootstrap() {
+    // 1. 初次載入，連線飛書同步班表
+    await syncRosterData({ showToast: false });
+
+    // 2. 註冊手動同步按鈕事件
+    const syncBtn = document.getElementById("cloud-sync");
+    if (syncBtn) {
+      syncBtn.addEventListener("click", () => {
+        syncRosterData({ showToast: true, isManual: true });
+      });
+    }
+
+    // 3. 註冊視窗焦點同步 (讓使用者一切回頁面就自動更新)
+    window.addEventListener("focus", () => {
+      syncRosterData({ showToast: false });
+    });
+
+    // 4. 設定每 30 秒自動背景輪詢同步
+    setInterval(() => {
+      syncRosterData({ showToast: false });
+    }, 30000);
   }
 
   bootstrap();

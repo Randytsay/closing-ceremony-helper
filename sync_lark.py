@@ -10,7 +10,9 @@ import re
 import sys
 import json
 import urllib.request
+import urllib.parse
 import subprocess
+import ssl
 
 # 1. 讀取本地 .env 檔案
 def load_env():
@@ -44,7 +46,8 @@ def get_tenant_access_token(app_id, app_secret):
     
     try:
         req = urllib.request.Request(url, data=data, headers=headers, method="POST")
-        with urllib.request.urlopen(req) as response:
+        context = ssl._create_unverified_context()
+        with urllib.request.urlopen(req, context=context) as response:
             res_body = json.loads(response.read().decode('utf-8'))
             if res_body.get("code") == 0:
                 print("✅ [Success] 飛書認證成功，順利取得 Tenant Access Token！")
@@ -58,7 +61,6 @@ def get_tenant_access_token(app_id, app_secret):
 
 # 3. 讀取飛書試算表單格值
 def fetch_spreadsheet_values(token, sheet_range, access_token):
-    # 對 range 進行 URL 編碼
     encoded_range = urllib.parse.quote(sheet_range)
     url = f"https://open.feishu.cn/open-apis/sheets/v2/spreadsheets/{token}/values/{encoded_range}"
     headers = {
@@ -67,7 +69,8 @@ def fetch_spreadsheet_values(token, sheet_range, access_token):
     
     try:
         req = urllib.request.Request(url, headers=headers, method="GET")
-        with urllib.request.urlopen(req) as response:
+        context = ssl._create_unverified_context()
+        with urllib.request.urlopen(req, context=context) as response:
             res_body = json.loads(response.read().decode('utf-8'))
             if res_body.get("code") == 0:
                 print(f"✅ [Success] 順利讀取飛書試算表數據！範圍: {sheet_range}")
@@ -87,7 +90,6 @@ def update_data_js(sheet_rows):
         print("⚠️ [Warning] 飛書試算表回傳空數據，未進行 data.js 的更新。")
         return
         
-    # 表頭過濾：排除第一行如果是 "角色 ID" 或 "角色ID" 的標題行
     if sheet_rows[0] and ("角色" in str(sheet_rows[0][0]) or "ID" in str(sheet_rows[0][0])):
         data_rows = sheet_rows[1:]
     else:
@@ -101,7 +103,6 @@ def update_data_js(sheet_rows):
     with open(data_js_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    # 提取所有指派的人名，以更新 defaultVolunteers 陣列
     unique_names = set()
     update_count = 0
 
@@ -112,15 +113,12 @@ def update_data_js(sheet_rows):
             assignee = str(row[2]).strip()
             
             if role_id and assignee:
-                # 收集非預設標記的人名
                 names = re.split(r'[,、.\s]', assignee)
                 for n in names:
                     trimmed = n.strip()
                     if trimmed and trimmed not in ["XXX", "學長團隊", "課務團隊", "全體義工團隊", "學員代表", "12位學員長", "各組學員長", "課務長"]:
                         unique_names.add(trimmed)
                 
-                # 5. 使用正則表達式，精準更新 data.js 中對應 role_id 的 assignee 值
-                # 比對格式: { id: "role_id", ..., assignee: "...", ... }
                 pattern = r'(\{\s*id:\s*["\']' + re.escape(role_id) + r'["\'],[^{}]*assignee:\s*["\'])([^"\']*)(["\'])'
                 content, count = re.subn(pattern, r'\g<1>' + assignee.replace('\\', '\\\\') + r'\g<3>', content)
                 if count > 0:
@@ -128,20 +126,16 @@ def update_data_js(sheet_rows):
 
     print(f"🔄 [Info] 已在 data.js 中成功更新了 {update_count} 處執事人員指派！")
 
-    # 6. 動態更新 defaultVolunteers 陣列
     if unique_names:
         sorted_names = sorted(list(unique_names))
-        # 產生格式化的 JS 陣列人名單
         volunteers_js_str = "defaultVolunteers: [\n    "
         volunteers_js_str += ",\n    ".join([f'"{name}"' for name in sorted_names])
         volunteers_js_str += "\n  ]"
         
-        # 正則替換 defaultVolunteers: [ ... ]
         content, count = re.subn(r'defaultVolunteers:\s*\[[^\]]*\]', volunteers_js_str, content)
         if count > 0:
             print(f"👥 [Info] 已自動更新名單庫 (defaultVolunteers)，共收錄 {len(sorted_names)} 位人員！")
 
-    # 寫回 data.js
     with open(data_js_path, 'w', encoding='utf-8') as f:
         f.write(content)
     print("💾 [Success] data.js 已安全寫入本地磁碟！")
@@ -149,7 +143,6 @@ def update_data_js(sheet_rows):
 # 7. 自動 Git 提交與 Push 部署
 def auto_git_deploy():
     try:
-        # 檢查是否有 data.js 變更
         status = subprocess.run(["git", "status", "--porcelain", "data.js"], capture_output=True, text=True)
         if not status.stdout.strip():
             print("🧘 [Info] 本地 data.js 未發生任何變更，無需 Push 至雲端發布。")
