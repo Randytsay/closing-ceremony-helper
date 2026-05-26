@@ -365,7 +365,7 @@ window.CEREMONY_DATA = {
       ],
       roles: [
         { id: "off_pull_hall", title: "拉班至禪堂(引導)", assignee: "邱黃秀枝(傳開)", desc: "帶領隊伍二路移壇，由清淨講堂走廊有序進入禪堂。" },
-        { id: "off_pull_out", title: "拉班出位", assignee: "葉金鳳(法經)", desc: "負責在講堂出口及禪堂入口維持隊伍拉班間距與速度。" },
+        { id: "off_pull_out", title: "拉班出位", assignee: "葉金鳳(法經)", desc: "負責引導出班及押班。" },
         { id: "off_cut_east", title: "東前切班定位", assignee: "鄭秀美(法岫)", desc: "於禪堂前半段東單位置協助學員切班與定位。" },
         { id: "off_cut_west", title: "西前切班定位", assignee: "張雅雯(法空)", desc: "於禪堂前半段西單位置協助學員切班與定位。" },
         { id: "off_guide_east_post", title: "東後引導定位", assignee: "曾雅蘭(傳昧)", desc: "於禪堂後半段東側引導學員站定位置。" },
