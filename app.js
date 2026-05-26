@@ -45,6 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (tabId === "maps") {
       renderActiveMap();
     }
+    if (tabId === "master-grid") {
+      renderMasterGrid();
+    }
   }
 
   // 2. 深淺色模式切換 (Theme Toggle)
@@ -467,11 +470,18 @@ document.addEventListener("DOMContentLoaded", () => {
     stageRoles.forEach(roleObj => {
       const pos = roleObj.position;
       if (pos) {
+        const assigneeName = roleObj.role.assignee || "XXX";
+        const isUnassigned = assigneeName === "XXX";
+        const assigneeStyle = isUnassigned 
+          ? "fill: var(--text-muted); font-size: 13px; font-weight: normal; opacity: 0.5;" 
+          : "fill: var(--text-primary); font-weight: bold; font-size: 14px;";
+
         spotsHtml += `
           <g class="svg-officer-spot" data-role-id="${roleObj.role.id}">
             <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="14" />
             <text class="svg-officer-label" x="${pos.x}" y="${pos.y}">執</text>
             <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 27}" style="fill: var(--color-gold); font-weight: bold;">${pos.label}</text>
+            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 44}" style="${assigneeStyle}">${assigneeName}</text>
           </g>
         `;
       }
@@ -571,11 +581,18 @@ document.addEventListener("DOMContentLoaded", () => {
     stageRoles.forEach(roleObj => {
       const pos = roleObj.position;
       if (pos) {
+        const assigneeName = roleObj.role.assignee || "XXX";
+        const isUnassigned = assigneeName === "XXX";
+        const assigneeStyle = isUnassigned 
+          ? "fill: var(--text-muted); font-size: 13px; font-weight: normal; opacity: 0.5;" 
+          : "fill: var(--text-primary); font-weight: bold; font-size: 14px;";
+
         spotsHtml += `
           <g class="svg-officer-spot" data-role-id="${roleObj.role.id}">
             <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="14" />
             <text class="svg-officer-label" x="${pos.x}" y="${pos.y}">執</text>
             <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 27}" style="fill: var(--color-gold); font-weight: bold;">${pos.label}</text>
+            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 44}" style="${assigneeStyle}">${assigneeName}</text>
           </g>
         `;
       }
@@ -689,11 +706,18 @@ document.addEventListener("DOMContentLoaded", () => {
     stageRoles.forEach(roleObj => {
       const pos = roleObj.position;
       if (pos) {
+        const assigneeName = roleObj.role.assignee || "XXX";
+        const isUnassigned = assigneeName === "XXX";
+        const assigneeStyle = isUnassigned 
+          ? "fill: var(--text-muted); font-size: 13px; font-weight: normal; opacity: 0.5;" 
+          : "fill: var(--text-primary); font-weight: bold; font-size: 14px;";
+
         spotsHtml += `
           <g class="svg-officer-spot" data-role-id="${roleObj.role.id}">
             <circle class="svg-officer-circle" cx="${pos.x}" cy="${pos.y}" r="14" />
             <text class="svg-officer-label" x="${pos.x}" y="${pos.y}">執</text>
             <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 27}" style="fill: var(--color-gold); font-weight: bold;">${pos.label}</text>
+            <text class="svg-chair-label" x="${pos.x}" y="${pos.y + 44}" style="${assigneeStyle}">${assigneeName}</text>
           </g>
         `;
       }
@@ -779,6 +803,102 @@ document.addEventListener("DOMContentLoaded", () => {
   if (audio) {
     audio.addEventListener("error", (e) => {
       console.log("音檔載入提示：獻給導師 2025 音檔將於與 index.html 置於同目錄下時正常播放。");
+    });
+  }
+
+  /* --------------------------------------------------------------------------
+     D2. 執事總表模組 (Master Grid Module)
+     -------------------------------------------------------------------------- */
+  const gridSearchInput = document.getElementById("grid-search-input");
+  const gridClearBtn = document.getElementById("btn-grid-clear");
+  const masterGridRows = document.getElementById("master-grid-rows");
+
+  if (gridSearchInput) {
+    gridSearchInput.addEventListener("input", () => {
+      if (gridClearBtn) gridClearBtn.style.display = gridSearchInput.value ? "block" : "none";
+      renderMasterGrid();
+    });
+  }
+
+  if (gridClearBtn) {
+    gridClearBtn.addEventListener("click", () => {
+      gridSearchInput.value = "";
+      gridClearBtn.style.display = "none";
+      renderMasterGrid();
+      gridSearchInput.focus();
+    });
+  }
+
+  function renderMasterGrid() {
+    if (!masterGridRows) return;
+    masterGridRows.innerHTML = "";
+
+    const filterText = gridSearchInput ? gridSearchInput.value.trim().toLowerCase() : "";
+
+    // 24位人員名單
+    const allPeople = [...volunteerPool];
+
+    // 分組的物理階段定義
+    const stageGroups = [
+      { name: "報到與預演", ids: ["checkin", "rehearsal"] },
+      { name: "結業頒證", ids: ["welcome", "awards_grad", "awards_full", "awards_sincere", "awards_diligence", "awards_study", "awards_bodhi", "sharing"] },
+      { name: "傳燈發願", ids: ["sermon", "lamps", "lamps_vow"] },
+      { name: "供燈供僧 (禪堂)", ids: ["offering"] },
+      { name: "撤場與其他", ids: ["farewell", "announcements", "cleanup"] }
+    ];
+
+    // 對於每個人，尋找他們在各個階段的執事
+    allPeople.forEach(personName => {
+      // 搜尋過濾：如果輸入了篩選字串，且這個人的姓名中不包含該字串，則跳過
+      if (filterText && !personName.toLowerCase().includes(filterText)) {
+        return;
+      }
+
+      const row = document.createElement("tr");
+      
+      // 1. 人員姓名 (Sticky cell)
+      let nameCellHtml = `<td class="master-grid-sticky-cell">${personName}</td>`;
+      row.innerHTML += nameCellHtml;
+
+      // 2. 搜尋此人在這 5 個階段的任務
+      stageGroups.forEach(group => {
+        const dutiesInGroup = [];
+        
+        data.stages.forEach(stage => {
+          if (group.ids.includes(stage.id)) {
+            stage.roles.forEach(role => {
+              if (role.assignee.includes(personName)) {
+                // 如果 assignee 包含了這個名字，說明他有這個任務
+                dutiesInGroup.push(`<span class="grid-role-badge" data-stage="${stage.id}" data-role="${role.id}">📍 ${role.title}</span>`);
+              }
+            });
+          }
+        });
+
+        if (dutiesInGroup.length > 0) {
+          row.innerHTML += `<td><div class="grid-duties-cell">${dutiesInGroup.join("")}</div></td>`;
+        } else {
+          row.innerHTML += `<td style="color: var(--text-muted); opacity: 0.5; text-align: center;">-</td>`;
+        }
+      });
+
+      // 綁定點擊 badge 跳轉到地圖或流程高亮定位
+      row.querySelectorAll(".grid-role-badge").forEach(badge => {
+        badge.addEventListener("click", () => {
+          const stageId = badge.getAttribute("data-stage");
+          const roleId = badge.getAttribute("data-role");
+          
+          // 查找對應的地圖 ID
+          const stage = data.stages.find(s => s.id === stageId);
+          if (stage) {
+            currentActiveMapId = stage.mapId;
+            activeHighlightRoleId = roleId;
+            switchTab("maps");
+          }
+        });
+      });
+
+      masterGridRows.appendChild(row);
     });
   }
 
@@ -943,6 +1063,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // 即時重新渲染前台時間軸與搜尋，確保連動同步！
         renderTimeline();
         updateDatalist();
+        renderMasterGrid();
       }
     }
   }
@@ -990,6 +1111,7 @@ window.CEREMONY_DATA = ${dataString};
   function bootstrap() {
     renderTimeline();
     updateDatalist();
+    renderMasterGrid();
     renderActiveMap();
     initAdminModule();
   }

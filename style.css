@@ -206,7 +206,7 @@ body {
    -------------------------------------------------------------------------- */
 .nav-tabs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   background: var(--bg-glass);
   backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border-color);
@@ -1370,6 +1370,7 @@ body {
   }
   
   .nav-tabs {
+    grid-template-columns: repeat(3, 1fr);
     border-radius: 12px;
     padding: 3px;
   }
@@ -1450,3 +1451,104 @@ body {
     color: var(--color-gold);
   }
 }
+
+/* ==========================================================================
+   F2. 執事總表專屬樣式 (Master Grid styles)
+   ========================================================================== */
+.master-grid-scroll-wrapper {
+  overflow-x: auto;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.master-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 19px;
+  text-align: left;
+  min-width: 900px;
+}
+
+.master-grid-table th, 
+.master-grid-table td {
+  padding: 16px 20px;
+  border-bottom: 1.5px solid var(--border-color);
+}
+
+.master-grid-table th {
+  background: var(--bg-tertiary);
+  color: var(--color-gold);
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 20px;
+  border-bottom: 2px solid var(--color-gold);
+}
+
+/* Sticky first column */
+.master-grid-sticky-cell {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  font-weight: bold;
+  background: var(--bg-secondary) !important;
+  border-right: 2px solid var(--color-gold) !important;
+  color: var(--color-gold);
+  font-size: 19px;
+  box-shadow: 4px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .master-grid-sticky-cell {
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+}
+
+.master-grid-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.master-grid-table tbody tr:hover {
+  background-color: rgba(212, 175, 55, 0.04);
+}
+
+.grid-duties-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.grid-role-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(212, 175, 55, 0.08);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.grid-role-badge:hover {
+  background: var(--color-gold);
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] .grid-role-badge:hover {
+  color: #121212 !important;
+}
+
+/* SVG Text styling */
+.svg-assignee-text {
+  font-family: var(--font-sans);
+  pointer-events: none;
+  user-select: none;
+}
+
