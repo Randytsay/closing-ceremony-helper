@@ -158,6 +158,11 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           card.classList.add("expanded");
           content.style.display = "block";
+          
+          // 平滑捲動，將點開的卡片頂端對齊視窗上方，避免因上方卡片收合而位移跑掉！
+          setTimeout(() => {
+            card.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 80);
         }
       });
 
